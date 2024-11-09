@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поступова Поява Команди</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background-color: #00ff00;
+            animation: blink 1s infinite;
+        }
+        .blue {
+            color: #0000ff; /* Синій колір для тексту "With Ukraine" */
+        }
+        .yellow {
+            color: #ffff00; /* Жовтий колір для тексту "in our hearts" */
+        }
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+        .hidden {
+            display: none; /* Схований вміст, який з'явиться після введення команди */
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <p id="command">lead@soc.team:~$ <span id="user-command"></span><span class="cursor"></span></p>
+        <pre id="ascii-art" class="hidden">
+┏┓┏┓┏┓    ┏┓
+┗┓┃┃┃ ┏┓┏┓┗┓
+┗┛┗┛┗┛┗┻┗┻┗┛
+        </pre>
+        <p id="output" class="hidden">
+            # SOC assist, SOC outsource.<br>
+            ## Blue & Red Team.<br>
+            <br>
+            Contact us: sales@soc.team<br>
+        </p>
+    </div>
+
+    <script>
+        // Текст команди, який буде "вводитися" поступово
+        const commandText = "cat glory_to_ukraine.md";
+
+        // Елементи для виводу
+        const commandElement = document.getElementById('user-command');
+        const asciiElement = document.getElementById('ascii-art');
+        const outputElement = document.getElementById('output');
+
+        // Змінна для зберігання індексу символа команди
+        let charIndex = 0;
+
+        // Функція для поступової появи тексту команди
+        function typeCommand() {
+            if (charIndex < commandText.length) {
+                commandElement.innerHTML += commandText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeCommand, 100); // 100 мс між кожним символом команди
+            } else {
+                // Після завершення введення команди, показуємо ASCII-арт та текст
+                asciiElement.classList.remove('hidden');
+                outputElement.classList.remove('hidden');
+            }
+        }
+
+        // Виклик функції для початку введення команди
+        typeCommand();
+    </script>
+</body>
+</html>
