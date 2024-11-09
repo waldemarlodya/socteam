@@ -18,6 +18,12 @@
             background-color: #00ff00;
             animation: blink 1s infinite;
         }
+        .blue {
+            color: #0000ff; /* Синій колір для тексту "With Ukraine" */
+        }
+        .yellow {
+            color: #ffff00; /* Жовтий колір для тексту "in our hearts" */
+        }
         @keyframes blink {
             0%, 50% {
                 opacity: 1;
@@ -44,24 +50,17 @@
             ## Blue & Red Team.<br>
             <br>
             Contact us: sales@soc.team<br>
-            =====<br>
         </p>
-        <p id="new-command" class="hidden">lead@soc.team:~$ <span id="new-command-text"></span><span class="cursor"></span></p>
-        <p id="userinfo-output" class="hidden"></p>
     </div>
 
     <script>
         // Текст команди, який буде "вводитися" поступово
         const commandText = "cat glory_to_ukraine.md";
-        const newCommandText = "./getuserinfo.sh";
 
         // Елементи для виводу
         const commandElement = document.getElementById('user-command');
         const asciiElement = document.getElementById('ascii-art');
         const outputElement = document.getElementById('output');
-        const newCommandElement = document.getElementById('new-command');
-        const newCommandTextElement = document.getElementById('new-command-text');
-        const userInfoOutputElement = document.getElementById('userinfo-output');
 
         // Змінна для зберігання індексу символа команди
         let charIndex = 0;
@@ -76,62 +75,7 @@
                 // Після завершення введення команди, показуємо ASCII-арт та текст
                 asciiElement.classList.remove('hidden');
                 outputElement.classList.remove('hidden');
-                setTimeout(typeNewCommand, 1000);
             }
-        }
-
-        // Функція для поступового введення нового командного рядка
-        function typeNewCommand() {
-            newCommandElement.classList.remove('hidden');
-            let charIndex = 0;
-            function typeChar() {
-                if (charIndex < newCommandText.length) {
-                    newCommandTextElement.innerHTML += newCommandText.charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeChar, 100);
-                } else {
-                    setTimeout(fetchUserInfo, 1000);
-                }
-            }
-            typeChar();
-        }
-
-        // Функція для отримання інформації про користувача
-        function fetchUserInfo() {
-            // Отримуємо дані про IP та локацію
-            fetch('https://ipinfo.io/json?token=18cd56e9aeab46')
-                .then(response => response.json())
-                .then(data => {
-                    const ip = data.ip;
-                    const city = data.city;
-                    const country = data.country;
-
-                    // Отримуємо інформацію про браузер і пристрій
-                    const browser = navigator.userAgent;
-                    const platform = navigator.platform;
-                    const language = navigator.language;
-
-                    // Отримуємо інформацію про час і часову зону
-                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    const currentTime = new Date().toLocaleString();
-
-                    // Виводимо всю зібрану інформацію
-                    userInfoOutputElement.innerHTML = `
-                        User Info:<br>
-                        IP Address: ${ip}<br>
-                        Location: ${city}, ${country}<br>
-                        Browser: ${browser}<br>
-                        Platform: ${platform}<br>
-                        Language: ${language}<br>
-                        Time Zone: ${timeZone}<br>
-                        Current Time: ${currentTime}<br>
-                    `;
-                    userInfoOutputElement.classList.remove('hidden');
-                })
-                .catch(error => {
-                    userInfoOutputElement.innerHTML = 'Unable to fetch user information.';
-                    userInfoOutputElement.classList.remove('hidden');
-                });
         }
 
         // Виклик функції для початку введення команди
