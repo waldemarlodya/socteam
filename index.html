@@ -18,12 +18,6 @@
             background-color: #00ff00;
             animation: blink 1s infinite;
         }
-        .blue {
-            color: #0000ff; /* Синій колір для тексту "With Ukraine" */
-        }
-        .yellow {
-            color: #ffff00; /* Жовтий колір для тексту "in our hearts" */
-        }
         @keyframes blink {
             0%, 50% {
                 opacity: 1;
@@ -50,36 +44,100 @@
             ## Blue & Red Team.<br>
             <br>
             Contact us: sales@soc.team<br>
+            ==========================<br>
         </p>
+        <p id="new-command" class="hidden">lead@soc.team:~$ <span id="new-command-text"></span><span class="cursor"></span></p>
+        <p id="userinfo-output" class="hidden"></p>
     </div>
 
     <script>
-        // Текст команди, який буде "вводитися" поступово
-        const commandText = "cat glory_to_ukraine.md";
-
         // Елементи для виводу
         const commandElement = document.getElementById('user-command');
         const asciiElement = document.getElementById('ascii-art');
         const outputElement = document.getElementById('output');
+        const newCommandElement = document.getElementById('new-command');
+        const newCommandTextElement = document.getElementById('new-command-text');
+        const userInfoOutputElement = document.getElementById('userinfo-output');
 
-        // Змінна для зберігання індексу символа команди
-        let charIndex = 0;
+        // Тексти команд
+        const commandText = "cat glory_to_Ukraine.md";
+        const newCommandText = "./getuserinfo.sh";
 
-        // Функція для поступової появи тексту команди
-        function typeCommand() {
-            if (charIndex < commandText.length) {
-                commandElement.innerHTML += commandText.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeCommand, 100); // 100 мс між кожним символом команди
-            } else {
-                // Після завершення введення команди, показуємо ASCII-арт та текст
-                asciiElement.classList.remove('hidden');
-                outputElement.classList.remove('hidden');
+        // Функція для поступової появи тексту
+        function typeText(element, text, callback) {
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    element.innerHTML += text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeChar, 100);
+                } else if (callback) {
+                    setTimeout(callback, 1000);
+                }
             }
+
+            typeChar();
         }
 
-        // Виклик функції для початку введення команди
-        typeCommand();
+        // Функція для отримання інформації про користувача
+        function fetchUserInfo() {
+            // Використання API ipapi.co для отримання детальної інформації про користувача
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    // Збирання даних з відповіді API
+                    const ip = data.ip ?? 'Unknown IP';
+                    const city = data.city ?? 'Unknown City';
+                    const region = data.region ?? 'Unknown Region';
+                    const country = data.country_name ?? 'Unknown Country';
+                    const postal = data.postal ?? 'Unknown Postal Code';
+                    const org = data.org ?? 'Unknown Organization';
+                    const latitude = data.latitude ?? 'Unknown Latitude';
+                    const longitude = data.longitude ?? 'Unknown Longitude';
+
+                    // Отримання інформації про браузер і пристрій
+                    const browser = navigator.userAgent;
+                    const platform = navigator.platform;
+                    const language = navigator.language;
+
+                    // Отримання інформації про час і часову зону
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const currentTime = new Date().toLocaleString();
+
+                    // Вивід зібраної інформації про користувача
+                    userInfoOutputElement.innerHTML = `
+                        User Info:<br>
+                        IP Address: ${ip}<br>
+                        Location: ${city}, ${region}, ${country}<br>
+                        Postal Code: ${postal}<br>
+                        Organization: ${org}<br>
+                        Coordinates: ${latitude}, ${longitude}<br>
+                        Browser: ${browser}<br>
+                        Platform: ${platform}<br>
+                        Language: ${language}<br>
+                        Time Zone: ${timeZone}<br>
+                        Current Time: ${currentTime}<br>
+                    `;
+                    userInfoOutputElement.classList.remove('hidden');
+                })
+                .catch(error => {
+                    userInfoOutputElement.innerHTML = 'Unable to fetch user information.';
+                    userInfoOutputElement.classList.remove('hidden');
+                });
+        }
+
+        // Виконання анімації команд послідовно
+        typeText(commandElement, commandText, () => {
+            // Показуємо ASCII арт та текст після першої команди
+            asciiElement.classList.remove('hidden');
+            outputElement.classList.remove('hidden');
+
+            // Починаємо друкувати нову команду
+            typeText(newCommandTextElement, newCommandText, fetchUserInfo);
+            newCommandElement.classList.remove('hidden');
+        });
+
     </script>
 </body>
 </html>
