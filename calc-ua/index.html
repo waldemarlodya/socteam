@@ -135,7 +135,6 @@
             color: white;
         }
 
-        /* Кнопки інформації для Red Team */
         .service-label.red .info-button {
             border-color: #d32f2f;
             color: #d32f2f;
@@ -211,7 +210,6 @@
         </div>
     </div>
 
-    <!-- Модальне вікно для опису послуг -->
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -220,7 +218,6 @@
     </div>
 
     <script>
-        // Завантажуємо текстовий файл за допомогою Fetch API
         document.addEventListener("DOMContentLoaded", function() {
             fetch('services.txt')
                 .then(response => response.text())
@@ -232,14 +229,23 @@
                     let redHtml = '<div class="service-category red"><h3>Red Team Послуги</h3>';
 
                     services.forEach(line => {
-                        const [name, price, description, team] = line.split('|').map(item => item.trim());
+                        const parts = line.split('|').map(item => item.trim());
+                        if (parts.length !== 4) {
+                            console.error('Неправильний формат рядка:', line);
+                            return; // пропускаємо рядок із помилкою
+                        }
+
+                        const [name, price, description, team] = parts;
+
+                        // Кодую опис, щоб уникнути проблем із лапками
+                        const encodedDescription = encodeURIComponent(description);
 
                         let serviceHtml = `
                             <label class="service-label ${team.toLowerCase()}">
                                 <input type="checkbox" class="${team.toLowerCase()}-service" value="${price}" onchange="updatePrice()">
                                 <span class="custom-checkbox"></span>
                                 ${name}
-                                <button class="info-button" onclick="showInfo('${description}')">i</button>
+                                <button class="info-button" onclick="showInfo('${encodedDescription}')">i</button>
                             </label>
                         `;
 
@@ -261,28 +267,24 @@
         function updatePrice() {
             let totalPrice = 0;
 
-            // Отримуємо всі позначені послуги Blue Team та Red Team
             const services = document.querySelectorAll('.blue-service:checked, .red-service:checked');
             services.forEach(service => {
-                totalPrice += parseInt(service.value);
+                totalPrice += parseFloat(service.value);
             });
 
-            // Виводимо загальну ціну в UI
-            document.getElementById('totalPrice').innerText = totalPrice;
+            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
         }
 
-        // Функція для показу опису послуги у модальному вікні
         function showInfo(description) {
-            document.getElementById('modalText').innerText = description;
+            const decodedDescription = decodeURIComponent(description);
+            document.getElementById('modalText').innerText = decodedDescription;
             document.getElementById('infoModal').style.display = "block";
         }
 
-        // Функція для закриття модального вікна
         function closeModal() {
             document.getElementById('infoModal').style.display = "none";
         }
 
-        // Закриття модального вікна при кліку поза його межами
         window.onclick = function(event) {
             const modal = document.getElementById('infoModal');
             if (event.target == modal) {
