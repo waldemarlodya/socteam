@@ -206,13 +206,13 @@
         <div id="service-section" class="service-section"></div>
         <div class="price-section">
             <h2>Ціна: <span id="totalPrice">0</span> USD</h2>
-            <button class="info-button" onclick="showInfo('Ціна вказана індикативно. Ліцензії на усі залучені продукти включені у вартість послуг. Остаточна вартість буде сформована з урахуванням кількості кінцевих точок, користувачів та подій.')">i</button>
+            <button id="info-price-button" class="info-button">i</button>
         </div>
     </div>
 
     <div id="infoModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" id="closeModal">&times;</span>
             <p id="modalText"></p>
         </div>
     </div>
@@ -237,15 +237,12 @@
 
                         const [name, price, description, team] = parts;
 
-                        // Кодую опис, щоб уникнути проблем із лапками
-                        const encodedDescription = encodeURIComponent(description);
-
                         let serviceHtml = `
                             <label class="service-label ${team.toLowerCase()}">
                                 <input type="checkbox" class="${team.toLowerCase()}-service" value="${price}" onchange="updatePrice()">
                                 <span class="custom-checkbox"></span>
                                 ${name}
-                                <button class="info-button" onclick="showInfo('${encodedDescription}')">i</button>
+                                <button class="info-button" data-description="${encodeURIComponent(description)}">i</button>
                             </label>
                         `;
 
@@ -260,6 +257,19 @@
                     redHtml += '</div>';
 
                     serviceSection.innerHTML = blueHtml + redHtml;
+
+                    // Додаємо події для кнопок після їх створення
+                    document.querySelectorAll('.info-button').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const description = decodeURIComponent(this.getAttribute('data-description'));
+                            showInfo(description);
+                        });
+                    });
+
+                    // Додаємо подію для кнопки "i" для загальної інформації про ціну
+                    document.getElementById('info-price-button').addEventListener('click', function() {
+                        showInfo('Ціна вказана індикативно. Ліцензії на усі залучені продукти включені у вартість послуг. Остаточна вартість буде сформована з урахуванням кількості кінцевих точок, користувачів та подій.');
+                    });
                 })
                 .catch(error => console.error('Помилка завантаження файлу:', error));
         });
@@ -276,8 +286,7 @@
         }
 
         function showInfo(description) {
-            const decodedDescription = decodeURIComponent(description);
-            document.getElementById('modalText').innerText = decodedDescription;
+            document.getElementById('modalText').innerText = description;
             document.getElementById('infoModal').style.display = "block";
         }
 
@@ -291,6 +300,8 @@
                 modal.style.display = "none";
             }
         }
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
     </script>
 </body>
 </html>
