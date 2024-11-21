@@ -154,6 +154,37 @@
             justify-content: center;
         }
 
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button.select-all {
+            background-color: #1e88e5;
+            color: white;
+        }
+
+        .action-button.clear {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -208,6 +239,10 @@
             <h2>Ціна: <span id="totalPrice">0</span> USD</h2>
             <button id="info-price-button" class="info-button">i</button>
         </div>
+        <div class="action-buttons">
+            <button id="selectAllButton" class="action-button select-all">Вибрати все</button>
+            <button id="clearButton" class="action-button clear">Очистити</button>
+        </div>
     </div>
 
     <div id="infoModal" class="modal">
@@ -258,7 +293,6 @@
 
                     serviceSection.innerHTML = blueHtml + redHtml;
 
-                    // Додаємо події для кнопок після їх створення
                     document.querySelectorAll('.info-button').forEach(button => {
                         button.addEventListener('click', function() {
                             const description = decodeURIComponent(this.getAttribute('data-description'));
@@ -266,9 +300,22 @@
                         });
                     });
 
-                    // Додаємо подію для кнопки "i" для загальної інформації про ціну
                     document.getElementById('info-price-button').addEventListener('click', function() {
                         showInfo('Ціна вказана індикативно. Ліцензії на усі залучені продукти включені у вартість послуг. Остаточна вартість буде сформована з урахуванням кількості кінцевих точок, користувачів та подій.');
+                    });
+
+                    document.getElementById('selectAllButton').addEventListener('click', function() {
+                        document.querySelectorAll('.blue-service, .red-service').forEach(checkbox => {
+                            checkbox.checked = true;
+                        });
+                        updatePrice();
+                    });
+
+                    document.getElementById('clearButton').addEventListener('click', function() {
+                        document.querySelectorAll('.blue-service, .red-service').forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        updatePrice();
                     });
                 })
                 .catch(error => console.error('Помилка завантаження файлу:', error));
