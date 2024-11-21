@@ -329,7 +329,7 @@
                 totalPrice += parseFloat(service.value);
             });
 
-            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+            document.getElementById('totalPrice').innerText = Math.round(totalPrice);
         }
 
         function showInfo(description) {
