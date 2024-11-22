@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online SOCaaS Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #1e88e5;
+        }
+
+        .service-section {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .service-category {
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .service-category.blue {
+            background-color: #e3f2fd;
+            border: 1px solid #64b5f6;
+        }
+
+        .service-category.red {
+            background-color: #ffebee;
+            border: 1px solid #ef5350;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .service-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.5em;
+            cursor: pointer;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .service-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .custom-checkbox {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 25px;
+            background-color: #ddd;
+            border-radius: 6px;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-label input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: #1e88e5;
+        }
+
+        .service-label.red input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: #d32f2f;
+        }
+
+        .custom-checkbox::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            background-color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .service-label input[type="checkbox"]:checked + .custom-checkbox::after {
+            opacity: 1;
+        }
+
+        .info-button {
+            background-color: transparent;
+            border: 2px solid #1e88e5;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e88e5;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        .info-button:hover {
+            background-color: #1e88e5;
+            color: white;
+        }
+
+        .service-label.red .info-button {
+            border-color: #d32f2f;
+            color: #d32f2f;
+        }
+
+        .service-label.red .info-button:hover {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        .price-section {
+            font-size: 1.8em;
+            margin-top: 30px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button.select-all {
+            background-color: #1e88e5;
+            color: white;
+        }
+
+        .action-button.clear {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: fadeIn 0.4s;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #444;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SOCaaS Calculator</h1>
+        <div id="service-section" class="service-section"></div>
+        <div class="price-section">
+            <h2>Price: <span id="totalPrice">0</span> USD</h2>
+            <button id="info-price-button" class="info-button">i</button>
+        </div>
+        <div class="action-buttons">
+            <button id="selectAllButton" class="action-button select-all">Select All</button>
+            <button id="clearButton" class="action-button clear">Clear</button>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('services.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const services = data.trim().split('\n');
+                    const serviceSection = document.getElementById('service-section');
+
+                    let blueHtml = '<div class="service-category blue"><h3>Blue Team Послуги</h3>';
+                    let redHtml = '<div class="service-category red"><h3>Red Team Послуги</h3>';
+
+                    services.forEach(line => {
+                        const parts = line.split('|').map(item => item.trim());
+                        if (parts.length !== 4) {
+                            console.error('Incorrect line format:', line);
+                            return; // Skip invalid line
+                        }
+
+                        const [name, price, description, team] = parts;
+
+                        let serviceHtml = `
+                            <label class="service-label ${team.toLowerCase()}">
+                                <input type="checkbox" class="${team.toLowerCase()}-service" value="${price}" onchange="updatePrice()">
+                                <span class="custom-checkbox"></span>
+                                ${name}
+                                <button class="info-button" data-description="${encodeURIComponent(description)}">i</button>
+                            </label>
+                        `;
+
+                        if (team === 'Blue') {
+                            blueHtml += serviceHtml;
+                        } else if (team === 'Red') {
+                            redHtml += serviceHtml;
+                        }
+                    });
+
+                    blueHtml += '</div>';
+                    redHtml += '</div>';
+
+                    serviceSection.innerHTML = blueHtml + redHtml;
+
+                    document.querySelectorAll('.info-button').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const description = decodeURIComponent(this.getAttribute('data-description'));
+                            showInfo(description);
+                        });
+                    });
+
+                    document.getElementById('info-price-button').addEventListener('click', function() {
+                        showInfo('The price is indicative. Licenses for all involved products are included in the service cost. The final cost will be calculated based on the number of endpoints, users, and events.');
+                    });
+
+                    document.getElementById('selectAllButton').addEventListener('click', function() {
+                        document.querySelectorAll('.blue-service, .red-service').forEach(checkbox => {
+                            checkbox.checked = true;
+                        });
+                        updatePrice();
+                    });
+
+                    document.getElementById('clearButton').addEventListener('click', function() {
+                        document.querySelectorAll('.blue-service, .red-service').forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        updatePrice();
+                    });
+                })
+                .catch(error => console.error('Error loading file:', error));
+        });
+
+        function updatePrice() {
+            let totalPrice = 0;
+
+            const services = document.querySelectorAll('.blue-service:checked, .red-service:checked');
+            services.forEach(service => {
+                totalPrice += parseFloat(service.value);
+            });
+
+            document.getElementById('totalPrice').innerText = Math.round(totalPrice);
+        }
+
+        function showInfo(description) {
+            document.getElementById('modalText').innerText = description;
+            document.getElementById('infoModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('infoModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+    </script>
+</body>
+</html>
