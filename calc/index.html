@@ -260,8 +260,8 @@
                     const services = data.trim().split('\n');
                     const serviceSection = document.getElementById('service-section');
 
-                    let blueHtml = '<div class="service-category blue"><h3>Blue Team Послуги</h3>';
-                    let redHtml = '<div class="service-category red"><h3>Red Team Послуги</h3>';
+                    let blueHtml = '<div class="service-category blue"><h3>Blue Team services</h3>';
+                    let redHtml = '<div class="service-category red"><h3>Red Team services</h3>';
 
                     services.forEach(line => {
                         const parts = line.split('|').map(item => item.trim());
