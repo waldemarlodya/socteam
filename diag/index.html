@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konva.js Interactive Puzzle Pieces</title>
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.3.4/konva.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #container {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        // Створюємо сцену Konva
+        var stage = new Konva.Stage({
+            container: 'container', // div для рендерингу
+            width: 800,
+            height: 800,
+        });
+
+        // Створюємо шар
+        var layer = new Konva.Layer();
+        stage.add(layer);
+
+        // Центр сцени
+        var centerX = stage.width() / 2;
+        var centerY = stage.height() / 2;
+
+        // Додаємо центральний текст "Cybersecurity"
+        var centralText = new Konva.Text({
+            x: centerX,
+            y: centerY,
+            text: 'Cybersecurity',
+            fontSize: 24,
+            fontFamily: 'Courier New',
+            fill: 'black',
+        });
+
+        // Вирівнюємо центральний текст по центру
+        centralText.offsetX(centralText.width() / 2);
+        centralText.offsetY(centralText.height() / 2);
+        layer.add(centralText);
+
+        // Функція для створення пазл-фрагментів (часточок)
+        function createPuzzlePiece(x, y, startAngle, endAngle, innerRadius, outerRadius, defaultColor, activeColor) {
+            // Створюємо фрагмент пазлу (часточку)
+            var piece = new Konva.Arc({
+                x: x,
+                y: y,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
+                angle: endAngle - startAngle,
+                rotation: startAngle,
+                fill: '#cccccc', // Початковий приглушений колір
+                stroke: 'black',
+                strokeWidth: 2,
+            });
+
+            // Додаємо подію "click" для зміни кольору на активний
+            piece.on('click', function () {
+                piece.fill(piece.fill() === defaultColor ? '#cccccc' : defaultColor);
+                layer.draw();
+            });
+
+            return piece;
+        }
+
+        // Перший рівень елементів
+        var firstLevelItems = [
+            'Endpoint Security',
+            'MFA',
+            'Patchmanagement'
+        ];
+        var firstLevelColors = ['#FF6B6B', '#6BCB77', '#4D96FF'];
+        var firstLevelRadius = 150;
+        var firstOuterRadius = 250;
+
+        // Розміщуємо перший рівень елементів як часточки пазлу
+        firstLevelItems.forEach((item, index) => {
+            var startAngle = (index / firstLevelItems.length) * 360;
+            var endAngle = ((index + 1) / firstLevelItems.length) * 360;
+
+            // Створюємо часточку як фрагмент пазлу
+            var piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, firstLevelRadius, firstOuterRadius, firstLevelColors[index]);
+            layer.add(piece);
+
+            // Додаємо текст для кожного елементу
+            var angle = (startAngle + endAngle) / 2;
+            var x = centerX + (firstLevelRadius + (firstOuterRadius - firstLevelRadius) / 2) * Math.cos(Konva.Util.degToRad(angle));
+            var y = centerY + (firstLevelRadius + (firstOuterRadius - firstLevelRadius) / 2) * Math.sin(Konva.Util.degToRad(angle));
+
+            var itemText = new Konva.Text({
+                x: x,
+                y: y,
+                text: item,
+                fontSize: 16,
+                fontFamily: 'Courier New',
+                fill: 'white',
+            });
+
+            // Вирівнюємо текст по центру відносно розташування
+            itemText.offsetX(itemText.width() / 2);
+            itemText.offsetY(itemText.height() / 2);
+
+            // Додаємо текст на шар
+            layer.add(itemText);
+        });
+
+        // Другий рівень елементів
+        var secondLevelItems = [
+            'Assessment',
+            'Awareness',
+            'Audit',
+            'Pentest',
+            'Dark monitoring',
+            'Network' // Додано новий елемент "Network"
+        ];
+        var secondLevelColors = ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'];
+        var secondLevelRadius = 260;
+        var secondOuterRadius = 370;
+
+        // Розміщуємо другий рівень елементів як часточки пазлу
+        secondLevelItems.forEach((item, index) => {
+            var startAngle = (index / secondLevelItems.length) * 360;
+            var endAngle = ((index + 1) / secondLevelItems.length) * 360;
+
+            // Створюємо часточку як фрагмент пазлу
+            var piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, secondLevelRadius, secondOuterRadius, secondLevelColors[index]);
+            layer.add(piece);
+
+            // Додаємо текст для кожного елементу
+            var angle = (startAngle + endAngle) / 2;
+            var x = centerX + (secondLevelRadius + (secondOuterRadius - secondLevelRadius) / 2) * Math.cos(Konva.Util.degToRad(angle));
+            var y = centerY + (secondLevelRadius + (secondOuterRadius - secondLevelRadius) / 2) * Math.sin(Konva.Util.degToRad(angle));
+
+            var itemText = new Konva.Text({
+                x: x,
+                y: y,
+                text: item,
+                fontSize: 16,
+                fontFamily: 'Courier New',
+                fill: 'white',
+            });
+
+            // Вирівнюємо текст по центру відносно розташування
+            itemText.offsetX(itemText.width() / 2);
+            itemText.offsetY(itemText.height() / 2);
+
+            // Додаємо текст на шар
+            layer.add(itemText);
+        });
+
+        // Додаємо шар на сцену
+        stage.add(layer);
+    </script>
+</body>
+</html>
