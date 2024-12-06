@@ -70,7 +70,7 @@
             var state = 0; // 0 - початковий колір, 1 - прозорий, 2 - активний колір
 
             // Додаємо подію "click" для зміни кольору
-            piece.on('click', function () {
+            function handleClick() {
                 if (state === 0) {
                     piece.fill('rgba(0, 0, 0, 0)'); // Прозорий колір
                     state = 1;
@@ -82,7 +82,11 @@
                     state = 0;
                 }
                 layer.draw();
-            });
+            }
+
+            // Додаємо події "click" та "touchstart"
+            piece.on('click', handleClick);
+            piece.on('touchstart', handleClick);
 
             return piece;
         }
