@@ -2,34 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Konva.js Interactive Puzzle</title>
     <script src="https://cdn.jsdelivr.net/npm/konva@8.3.4/konva.min.js"></script>
     <style>
         body {
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             overflow: hidden;
         }
         #container {
             width: 100%;
             height: 100%;
+            touch-action: none; /* Вимкнення жестів браузера */
         }
     </style>
 </head>
 <body>
     <div id="container"></div>
     <script>
-        const containerWidth = window.innerWidth;
-        const containerHeight = window.innerHeight;
+        // Розміри сцени
+        const container = document.getElementById('container');
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
 
         const stage = new Konva.Stage({
             container: 'container',
-            width: containerWidth,
-            height: containerHeight,
+            width: width,
+            height: height,
         });
 
         const layer = new Konva.Layer();
@@ -94,15 +93,12 @@
 
                 itemText.offsetX(itemText.width() / 2);
                 itemText.offsetY(itemText.height() / 2);
-
-                // Текст не буде перекривати клік по фрагменту
                 itemText.listening(false);
                 layer.add(itemText);
             });
         }
 
-        // Динамічні радіуси та шрифти
-        const scaleFactor = Math.min(containerWidth, containerHeight) / 800;
+        const scaleFactor = Math.min(width, height) / 800;
         const fontSize = Math.max(8, 12 * scaleFactor);
 
         // Перший рівень
@@ -126,34 +122,7 @@
             fontSize
         );
 
-        stage.add(layer);
-
-        // Оновлення сцени при зміні розмірів вікна
-        window.addEventListener('resize', () => {
-            const newWidth = window.innerWidth;
-            const newHeight = window.innerHeight;
-
-            stage.width(newWidth);
-            stage.height(newHeight);
-
-            layer.destroyChildren();
-            createLevel(['Endpoint Sec', 'MFA', 'Patchmgm'], ['#FF6B6B', '#6BCB77', '#4D96FF'], 80 * scaleFactor, 120 * scaleFactor, fontSize);
-            createLevel(
-                ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
-                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
-                130 * scaleFactor,
-                180 * scaleFactor,
-                fontSize
-            );
-            createLevel(
-                ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
-                ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
-                190 * scaleFactor,
-                250 * scaleFactor,
-                fontSize
-            );
-            layer.batchDraw();
-        });
+        layer.batchDraw();
     </script>
 </body>
 </html>
