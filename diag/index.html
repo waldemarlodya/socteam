@@ -3,53 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konva Debug Scene</title>
+    <title>Interactive Puzzle with Konva.js</title>
     <script src="https://cdn.jsdelivr.net/npm/konva@8.3.4/konva.min.js"></script>
     <style>
         body {
             margin: 0;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         #container {
-            width: 100vw;
-            height: 100vh;
-            background-color: #f0f0f0; /* Світлий фон для тестування */
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
     <div id="container"></div>
     <script>
-        // Отримуємо розміри контейнера
+        // Отримуємо розміри сцени
         const container = document.getElementById('container');
-        const width = container.offsetWidth;
-        const height = container.offsetHeight;
+        let width = window.innerWidth;
+        let height = window.innerHeight;
 
-        console.log('Width:', width, 'Height:', height); // Лог для перевірки
-
-        // Ініціалізуємо сцену
         const stage = new Konva.Stage({
             container: 'container',
             width: width,
             height: height,
         });
 
-        // Додаємо шар
         const layer = new Konva.Layer();
         stage.add(layer);
 
-        // Малюємо тестовий круг для перевірки
-        const testCircle = new Konva.Circle({
-            x: width / 2,
-            y: height / 2,
-            radius: 50,
-            fill: 'red',
-            stroke: 'black',
-            strokeWidth: 2,
-        });
+        // Центр сцени
+        const centerX = stage.width() / 2;
+        const centerY = stage.height() / 2;
 
-        layer.add(testCircle);
+        // Створення елементів пазлу
+        function createPuzzlePiece(x, y, startAngle, endAngle, innerRadius, outerRadius, defaultColor) {
+            const piece = new Konva.Arc({
+                x: x,
+                y: y,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
+                angle: endAngle - startAngle,
+                rotation: startAngle,
+                fill: '#ccc', // Початковий колір
+                stroke: 'black',
+                strokeWidth: 1,
+            });
+
+            let state = 0;
+            piece.on('click touchstart', () => {
+                if (state === 0) {
+                    piece.fill('transparent');
+                    state = 1;
+                } else if (state === 1) {
+                    piece.fill(defaultColor);
+                    state = 2;
+                } else {
+                    piece.fill('#ccc');
+                    state = 0;
+                }
+                layer.batchDraw();
+            });
+
+            return piece;
+        }
+
+        function createLevel(items, colors, innerRadius, outerRadius, fontSize) {
+            items.forEach((item, index) => {
+                const startAngle = (index / items.length) * 360;
+                const endAngle = ((index + 1) / items.length) * 360;
+
+                const piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, innerRadius, outerRadius, colors[index]);
+                layer.add(piece);
+
+                // Додаємо текст
+                const angle = (startAngle + endAngle) / 2;
+                const textX = centerX + (innerRadius + (outerRadius - innerRadius) / 2) * Math.cos(Konva.Util.degToRad(angle));
+                const textY = centerY + (innerRadius + (outerRadius - innerRadius) / 2) * Math.sin(Konva.Util.degToRad(angle));
+
+                const itemText = new Konva.Text({
+                    x: textX,
+                    y: textY,
+                    text: item,
+                    fontSize: fontSize,
+                    fontFamily: 'Courier New',
+                    fill: 'white',
+                    align: 'center',
+                });
+
+                itemText.offsetX(itemText.width() / 2);
+                itemText.offsetY(itemText.height() / 2);
+                itemText.listening(false); // Не блокує події
+                layer.add(itemText);
+            });
+        }
+
+        // Масштабування
+        const scaleFactor = Math.min(width, height) / 800;
+        const fontSize = Math.max(10, 14 * scaleFactor);
+
+        // Перший рівень
+        createLevel(
+            ['Endpoint Sec', 'MFA', 'Patchmgm'],
+            ['#FF6B6B', '#6BCB77', '#4D96FF'],
+            80 * scaleFactor,
+            120 * scaleFactor,
+            fontSize
+        );
+
+        // Другий рівень
+        createLevel(
+            ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
+            ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+            130 * scaleFactor,
+            180 * scaleFactor,
+            fontSize
+        );
+
+        // Третій рівень
+        createLevel(
+            ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
+            ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
+            190 * scaleFactor,
+            250 * scaleFactor,
+            fontSize
+        );
+
         layer.draw();
+
+        // Оновлення сцени при зміні розмірів
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+
+            stage.width(width);
+            stage.height(height);
+
+            layer.destroyChildren(); // Очищаємо шар
+            const scaleFactor = Math.min(width, height) / 800;
+
+            createLevel(
+                ['Endpoint Sec', 'MFA', 'Patchmgm'],
+                ['#FF6B6B', '#6BCB77', '#4D96FF'],
+                80 * scaleFactor,
+                120 * scaleFactor,
+                fontSize
+            );
+
+            createLevel(
+                ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
+                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+                130 * scaleFactor,
+                180 * scaleFactor,
+                fontSize
+            );
+
+            createLevel(
+                ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
+                ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
+                190 * scaleFactor,
+                250 * scaleFactor,
+                fontSize
+            );
+
+            layer.batchDraw();
+        });
     </script>
 </body>
 </html>
