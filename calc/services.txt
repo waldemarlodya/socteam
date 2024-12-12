@@ -10,5 +10,8 @@ Threat and Vulnerability Intelligence Services | 500 | A weekly security bulleti
 Risk Intelligence Provision | 1000 | On-demand provision of information on potential risks regarding individuals and legal entities, as well as consulting services. OSINT on individuals and legal entities (5 requests per month). | Red
 Audit | 1000 | Physical security assessment to identify penetration opportunities. Preparation for certification. | Red
 Pentest | 1700 | Penetration testing to identify system security weaknesses. | Red
-Full Access to OSINT/CSINT Platform | 10500 | Full access to the platform's functionality. A pilot is possible only with the vendor engineer's participation. | Red
-Specialized Platforms to Counter Human and Financial Risks | 3000 | Deployment of appropriate solutions on the client side and anonymization of requests for processing sensitive data. | Red
+Specialized Platforms for Counteracting Human and Financial Risks | 3000 | Deployment of relevant solutions on the client side and anonymization of requests for processing sensitive data. | Red
+Phishing Simulation | 500 | Deployment of relevant solutions on the client side or providing services for organizing phishing campaigns. | Red
+Advanced Patch Management Feed | 6000 | Access to the full platform or integration for active threat management. | Red
+Advanced IP Address Feed | 8000 | Integration of IP address feeds for anonymizers and bulletproof hostings. | Red
+Full Access to OSINT/CSINT Platform | 10500 | Access to the full platform functionality. A pilot is only possible with vendor engineer participation. | Red
