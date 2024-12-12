@@ -23,7 +23,6 @@
 <body>
     <div id="container"></div>
     <script>
-        // Отримуємо розміри сцени
         const container = document.getElementById('container');
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -37,11 +36,9 @@
         const layer = new Konva.Layer();
         stage.add(layer);
 
-        // Центр сцени
         const centerX = stage.width() / 2;
         const centerY = stage.height() / 2;
 
-        // Створення елементів пазлу
         function createPuzzlePiece(x, y, startAngle, endAngle, innerRadius, outerRadius, defaultColor) {
             const piece = new Konva.Arc({
                 x: x,
@@ -50,7 +47,7 @@
                 outerRadius: outerRadius,
                 angle: endAngle - startAngle,
                 rotation: startAngle,
-                fill: '#ccc', // Початковий колір
+                fill: '#ccc',
                 stroke: 'black',
                 strokeWidth: 1,
             });
@@ -81,7 +78,6 @@
                 const piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, innerRadius, outerRadius, colors[index]);
                 layer.add(piece);
 
-                // Додаємо текст
                 const angle = (startAngle + endAngle) / 2;
                 const textX = centerX + (innerRadius + (outerRadius - innerRadius) / 2) * Math.cos(Konva.Util.degToRad(angle));
                 const textY = centerY + (innerRadius + (outerRadius - innerRadius) / 2) * Math.sin(Konva.Util.degToRad(angle));
@@ -98,12 +94,11 @@
 
                 itemText.offsetX(itemText.width() / 2);
                 itemText.offsetY(itemText.height() / 2);
-                itemText.listening(false); // Не блокує події
+                itemText.listening(false);
                 layer.add(itemText);
             });
         }
 
-        // Масштабування
         const scaleFactor = Math.min(width, height) / 800;
         const fontSize = Math.max(10, 14 * scaleFactor);
 
@@ -118,8 +113,8 @@
 
         // Другий рівень
         createLevel(
-            ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
-            ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+            ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network', 'XDR', 'MDM'],
+            ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF', '#E63946', '#CBF3F0'],
             130 * scaleFactor,
             180 * scaleFactor,
             fontSize
@@ -127,8 +122,14 @@
 
         // Третій рівень
         createLevel(
-            ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
-            ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
+            [
+                'Sandbox', 'Deception', 'NTA', 'DLP', 'TI/YARA', 'IAM/PAM', 
+                'WAF', 'OSINT', 'SIEM', 'SOAR', 'IPTI', 'PMTI' // Додано IPTI та PMTI
+            ],
+            [
+                '#FF9F1C', '#2EC4B6', '#011627', '#FFBF69', '#A8DADC', '#457B9D',
+                '#6A0572', '#D90368', '#6A0572', '#D90368', '#8E44AD', '#16A085'
+            ],
             190 * scaleFactor,
             250 * scaleFactor,
             fontSize
@@ -136,7 +137,6 @@
 
         layer.draw();
 
-        // Оновлення сцени при зміні розмірів
         window.addEventListener('resize', () => {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -144,7 +144,8 @@
             stage.width(width);
             stage.height(height);
 
-            layer.destroyChildren(); // Очищаємо шар
+            layer.destroyChildren();
+
             const scaleFactor = Math.min(width, height) / 800;
 
             createLevel(
@@ -156,16 +157,22 @@
             );
 
             createLevel(
-                ['Assessm', 'Awareness', 'Audit', 'Pent.', 'Dark mon.', 'Netw.'],
-                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+                ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network', 'XDR', 'MDM'],
+                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF', '#E63946', '#CBF3F0'],
                 130 * scaleFactor,
                 180 * scaleFactor,
                 fontSize
             );
 
             createLevel(
-                ['Sandbox', 'Decep.', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT', 'SIEM', 'SOAR'],
-                ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557', '#FF9F1C', '#2EC4B6'],
+                [
+                    'Sandbox', 'Deception', 'NTA', 'DLP', 'TI/YARA', 'IAM/PAM', 
+                    'WAF', 'OSINT', 'SIEM', 'SOAR', 'IPTI', 'PMTI'
+                ],
+                [
+                    '#FF9F1C', '#2EC4B6', '#011627', '#FFBF69', '#A8DADC', '#457B9D',
+                    '#6A0572', '#D90368', '#6A0572', '#D90368', '#8E44AD', '#16A085'
+                ],
                 190 * scaleFactor,
                 250 * scaleFactor,
                 fontSize
