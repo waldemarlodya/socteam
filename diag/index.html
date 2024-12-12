@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konva.js Interactive Puzzle Pieces</title>
+    <title>Konva.js Interactive Puzzle</title>
     <script src="https://cdn.jsdelivr.net/npm/konva@8.3.4/konva.min.js"></script>
     <style>
         body {
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            overflow: hidden; /* Заборона прокрутки */
+            overflow: hidden;
         }
         #container {
-            border: 1px solid #ddd;
             width: 100%;
             height: 100%;
         }
@@ -24,34 +23,23 @@
 <body>
     <div id="container"></div>
     <script>
-        // Динамічний розмір сцени
-        var containerWidth = window.innerWidth;
-        var containerHeight = window.innerHeight;
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
 
-        var stage = new Konva.Stage({
+        const stage = new Konva.Stage({
             container: 'container',
             width: containerWidth,
             height: containerHeight,
         });
 
-        var layer = new Konva.Layer();
+        const layer = new Konva.Layer();
         stage.add(layer);
 
-        var centerX = stage.width() / 2;
-        var centerY = stage.height() / 2;
-
-        function getResponsiveRadius(level) {
-            const baseRadius = [80, 150, 230]; // Радіуси для PC
-            const scaleFactor = Math.min(stage.width(), stage.height()) / 800; // Масштабування
-            return baseRadius[level] * scaleFactor;
-        }
-
-        function getFontSize() {
-            return Math.max(10, Math.min(20, stage.width() / 40));
-        }
+        const centerX = stage.width() / 2;
+        const centerY = stage.height() / 2;
 
         function createPuzzlePiece(x, y, startAngle, endAngle, innerRadius, outerRadius, defaultColor) {
-            var piece = new Konva.Arc({
+            const piece = new Konva.Arc({
                 x: x,
                 y: y,
                 innerRadius: innerRadius,
@@ -63,10 +51,11 @@
                 strokeWidth: 1,
             });
 
-            var state = 0;
-            function handleClick() {
+            let state = 0;
+
+            piece.on('click touchstart', () => {
                 if (state === 0) {
-                    piece.fill('rgba(0, 0, 0, 0)');
+                    piece.fill('transparent');
                     state = 1;
                 } else if (state === 1) {
                     piece.fill(defaultColor);
@@ -75,69 +64,95 @@
                     piece.fill('#cccccc');
                     state = 0;
                 }
-                layer.draw();
-            }
-            piece.on('click', handleClick);
-            piece.on('touchstart', handleClick);
+                layer.batchDraw();
+            });
 
             return piece;
         }
 
-        function createLevel(items, colors, level) {
-            const innerRadius = getResponsiveRadius(level);
-            const outerRadius = getResponsiveRadius(level) + 60;
-
+        function createLevel(items, colors, innerRadius, outerRadius, fontSize) {
             items.forEach((item, index) => {
-                var startAngle = (index / items.length) * 360;
-                var endAngle = ((index + 1) / items.length) * 360;
+                const startAngle = (index / items.length) * 360;
+                const endAngle = ((index + 1) / items.length) * 360;
 
-                var piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, innerRadius, outerRadius, colors[index]);
+                const piece = createPuzzlePiece(centerX, centerY, startAngle, endAngle, innerRadius, outerRadius, colors[index]);
                 layer.add(piece);
 
-                var angle = (startAngle + endAngle) / 2;
-                var textRadius = innerRadius + (outerRadius - innerRadius) / 2;
+                const angle = (startAngle + endAngle) / 2;
+                const textX = centerX + (innerRadius + (outerRadius - innerRadius) / 2) * Math.cos(Konva.Util.degToRad(angle));
+                const textY = centerY + (innerRadius + (outerRadius - innerRadius) / 2) * Math.sin(Konva.Util.degToRad(angle));
 
-                var x = centerX + textRadius * Math.cos(Konva.Util.degToRad(angle));
-                var y = centerY + textRadius * Math.sin(Konva.Util.degToRad(angle));
-
-                var itemText = new Konva.Text({
-                    x: x,
-                    y: y,
+                const itemText = new Konva.Text({
+                    x: textX,
+                    y: textY,
                     text: item,
-                    fontSize: getFontSize(),
+                    fontSize: fontSize,
                     fontFamily: 'Courier New',
                     fill: 'white',
+                    align: 'center',
                 });
 
                 itemText.offsetX(itemText.width() / 2);
                 itemText.offsetY(itemText.height() / 2);
+
+                // Текст не буде перекривати клік по фрагменту
+                itemText.listening(false);
                 layer.add(itemText);
             });
         }
 
-        // Перший рівень
-        createLevel(['Endpoint Sec', 'MFA', 'Patchmgm'], ['#FF6B6B', '#6BCB77', '#4D96FF'], 0);
-        // Другий рівень
-        createLevel(['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'], 
-            ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'], 1);
-        // Третій рівень
-        createLevel(['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'], 
-            ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'], 2);
+        // Динамічні радіуси та шрифти
+        const scaleFactor = Math.min(containerWidth, containerHeight) / 800;
+        const fontSize = Math.max(8, 12 * scaleFactor);
 
-        // Масштабування сцени при зміні розміру вікна
+        // Перший рівень
+        createLevel(['Endpoint Sec', 'MFA', 'Patchmgm'], ['#FF6B6B', '#6BCB77', '#4D96FF'], 80 * scaleFactor, 120 * scaleFactor, fontSize);
+
+        // Другий рівень
+        createLevel(
+            ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
+            ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+            130 * scaleFactor,
+            180 * scaleFactor,
+            fontSize
+        );
+
+        // Третій рівень
+        createLevel(
+            ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
+            ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
+            190 * scaleFactor,
+            250 * scaleFactor,
+            fontSize
+        );
+
+        stage.add(layer);
+
+        // Оновлення сцени при зміні розмірів вікна
         window.addEventListener('resize', () => {
-            stage.width(window.innerWidth);
-            stage.height(window.innerHeight);
-            centerX = stage.width() / 2;
-            centerY = stage.height() / 2;
+            const newWidth = window.innerWidth;
+            const newHeight = window.innerHeight;
+
+            stage.width(newWidth);
+            stage.height(newHeight);
 
             layer.destroyChildren();
-            createLevel(['Endpoint Sec', 'MFA', 'Patchmgm'], ['#FF6B6B', '#6BCB77', '#4D96FF'], 0);
-            createLevel(['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'], 
-                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'], 1);
-            createLevel(['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'], 
-                ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'], 2);
-            layer.draw();
+            createLevel(['Endpoint Sec', 'MFA', 'Patchmgm'], ['#FF6B6B', '#6BCB77', '#4D96FF'], 80 * scaleFactor, 120 * scaleFactor, fontSize);
+            createLevel(
+                ['Assessm.', 'Awareness', 'Audit', 'Pentest', 'Dark monitoring', 'Network'],
+                ['#FFD93D', '#FF7F3F', '#A77CFF', '#32E0C4', '#FF4D4D', '#1E90FF'],
+                130 * scaleFactor,
+                180 * scaleFactor,
+                fontSize
+            );
+            createLevel(
+                ['Sandbox', 'Deception', 'XDR', 'NTA', 'DLP', 'MDM', 'TI/YARA', 'IAM/PAM', 'WAF', 'OSINT'],
+                ['#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#FFBF69', '#CBF3F0', '#E63946', '#A8DADC', '#457B9D', '#1D3557'],
+                190 * scaleFactor,
+                250 * scaleFactor,
+                fontSize
+            );
+            layer.batchDraw();
         });
     </script>
 </body>
