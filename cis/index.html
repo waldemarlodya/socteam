@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CIS Controls v8.1 — трекер впровадження</title>
+<title>CIS Controls v8 — трекер впровадження</title>
 <style>
 :root{
   --paper:#E9EDF1;
@@ -315,7 +315,7 @@ main{max-width:1120px;margin:0 auto;padding:22px 20px 80px}
 <main>
   <div class="hint" id="hint"></div>
   <details class="panel only-cis" id="panel">
-    <summary>Продукти ESET <span class="tally" id="tally">нічого не вибрано</span></summary>
+    <summary>Продукти ESET та партнерів <span class="tally" id="tally">нічого не вибрано</span></summary>
     <div class="pbody">
       <div class="presets" id="presets">
         <span>ГОТОВІ НАБОРИ:</span>
@@ -324,13 +324,14 @@ main{max-width:1120px;margin:0 auto;padding:22px 20px 80px}
         <button class="ghost" data-preset="complete">COMPLETE</button>
         <button class="ghost" data-preset="elite">ELITE</button>
         <button class="ghost" data-preset="ultimate">MDR ULTIMATE</button>
+        <button class="ghost" data-preset="stack">ELITE + XOPERO + SAFETICA</button>
         <button class="ghost" data-preset="none">ОЧИСТИТИ</button>
       </div>
       <div class="pgrid" id="pgrid"></div>
       <div class="pnote">
         Зелена заливка рядка = safeguard, який продукт закриває; світліша — закриває частково або лише сприяє.
         Це <b>не</b> статус впровадження: продукт треба ще налаштувати, і статус ви ставите вручну.
-        Мапінг — експертна оцінка на основі функцій продуктів, а не офіційний документ ESET чи CIS; склад наборів PROTECT змінюється залежно від регіону й дати.
+        Мапінг — експертна оцінка на основі функцій продуктів, а не офіційний документ вендора чи CIS; склад наборів PROTECT змінюється залежно від регіону й дати. Xopero та Safetica — продукти сторонніх виробників: вони не входять до жодного набору ESET PROTECT і ліцензуються окремо.
       </div>
     </div>
   </details>
@@ -564,6 +565,9 @@ const PRODUCTS = [
  ["Доступ та уразливості",[
   ["esa","ESET Secure Authentication (MFA)",{ "6.3":2,"6.4":2,"6.5":2,"5.2":1 }],
   ["vpm","ESET Vulnerability & Patch Management",{ "7.3":2,"7.4":2,"7.5":2,"7.1":1,"7.7":1,"2.2":1 }]]],
+ ["Партнерські рішення (не ESET)",[
+  ["xop","Xopero (резервне копіювання й відновлення)",{ "11.2":2,"11.3":2,"11.4":2,"11.1":1,"11.5":1,"3.4":1,"3.11":1 }],
+  ["saf","Safetica (DLP та інсайдерські ризики)",{ "3.13":2,"3.14":2,"3.7":2,"3.2":1,"3.3":1,"3.9":1,"3.10":1,"10.3":1,"13.1":1 }]]],
  ["Управління та навчання",[
   ["protect","ESET PROTECT (консоль керування)",{ "2.1":2,"2.3":2,"8.9":2,"10.6":2,"1.1":1,"4.1":1,"4.6":1,"8.2":1,"8.10":1,"13.1":1 }],
   ["cat","ESET Cybersecurity Awareness Training",{ "14.1":2,"14.2":2,"14.3":2,"14.4":2,"14.5":2,"14.6":2,"14.8":2,"14.7":1,"14.9":1 }]]]
@@ -577,6 +581,7 @@ const PRESETS = {
   complete: ["protect","ep","ess","efde","lga","ems","ecos","mdm"],
   elite:    ["protect","ep","ess","efde","lga","ems","ecos","mdm","ei","vpm","esa"],
   ultimate: ["protect","ep","ess","efde","lga","ems","ecos","mdm","ei","vpm","esa","mdr","eti"],
+  stack:    ["protect","ep","ess","efde","lga","ems","ecos","mdm","ei","vpm","esa","xop","saf"],
   none:     []
 };
 
