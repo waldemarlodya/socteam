@@ -607,7 +607,7 @@ const REV = {};            // рамка → safeguard → [елементи]
 Object.entries(MAPS).forEach(([f, m]) => { REV[f] = {}; m.els.forEach(e => e.sg.forEach(s => (REV[f][s] ??= []).push(e))); });
 const TIERS = Object.fromEntries(DSS.map(x => [x[0], x[2]]));      // підкатегорія CSF → категорії, для яких базова (план ДССЗЗІ)
 const isBaseCsf = id => !!state.cat && (TIERS[id] || []).includes(state.cat);
-const csfBaseOnly = () => state.base && !!state.cat;
+const csfBaseOnly = () => !!state.cat;
 let EREV = REV;                                                      // REV з урахуванням фільтра «лише базові» для NIST
 function computeEff(){
   if (!csfBaseOnly()){ EREV = REV; return; }
@@ -799,9 +799,9 @@ function row(it){
   if (it.fw === "cis" && fwSel().length){
     fwSel().forEach(f => {
       const els = EREV[f][k]; if (!els) return;
-      const star = e => f === "csf" && isBaseCsf(e.id);
-      const ids = els.map(e => e.id + (star(e) ? "★" : ""));
-      const tip = MAPS[f].label + "\n" + els.map(e => `${e.id}${star(e) ? " (базовий)" : ""} — ${e.text.split("\n")[0].slice(0, 140)}`).join("\n");
+      const ids = els.map(e => e.id);
+      const head = f === "csf" && csfBaseOnly() ? `${MAPS[f].label} · базові для: ${CATS[state.cat][0]}` : MAPS[f].label;
+      const tip = head + "\n" + els.map(e => `${e.id} — ${e.text.split("\n")[0].slice(0, 140)}`).join("\n");
       chips.push(`<span class="chip mk" data-m="${f}" title="${esc(tip)}">${MAPS[f].short} ${ids.slice(0, 4).join(" · ")}${ids.length > 4 ? ` +${ids.length - 4}` : ""}</span>`);
     });
     cls += marked(it) ? " marked" : " faded";
@@ -847,10 +847,9 @@ function renderFwbar(){
       <span class="kicker">NIST CSF 2.0 · базові заходи плану ДССЗЗІ</span>
       <select class="field" data-sel="cat">${CATS.map((c, i) =>
         `<option value="${i}"${i === state.cat ? " selected" : ""}>${i ? c[0] : "Категорія суб'єкта: не обрано"}</option>`).join("")}</select>
-      <label class="check${state.cat ? "" : " off"}"><input type="checkbox" data-chk="base"${state.base ? " checked" : ""}${state.cat ? "" : " disabled"}> ЛИШЕ БАЗОВІ</label>
       <span class="fw-note">${state.cat
-        ? `базових для категорії: ${MAPS.csf.els.filter(e => isBaseCsf(e.id)).length} із ${MAPS.csf.els.length} підкатегорій з мапінгом`
-        : "оберіть категорію, щоб бачити базові підкатегорії"}</span>
+        ? `відмічаються лише базові: ${MAPS.csf.els.filter(e => isBaseCsf(e.id)).length} із ${MAPS.csf.els.length} підкатегорій → ${Object.keys(EREV.csf).length} safeguards`
+        : `усі ${MAPS.csf.els.length} підкатегорій — оберіть категорію, щоб відмітити лише базові`}</span>
     </div>` : ""}
     <div class="fw-opts${sel.length ? "" : " off"}">
       ${sel.length > 1 ? `<span class="kicker">Відмічати</span>${seg("fwMode", [["any", "БУДЬ-ЯКИЙ З ОБРАНИХ"], ["all", "УСІ ОБРАНІ ОДНОЧАСНО"]], ui.fwMode)}` : ""}
