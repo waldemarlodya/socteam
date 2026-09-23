@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Трекер кіберзахисту — SOC.team</title>
+<title>Трекер кіберзахисту — CIS v8.1 · CSF 2.0 · ДССЗЗІ · ISO 27001 · NIS2</title>
 <style>
 /* ================================================================ tokens */
 :root{
@@ -169,6 +169,22 @@ select.field{max-width:min(360px,100%)}
 .note label.wide{grid-column:1 / -1}
 .note textarea{min-height:56px;resize:vertical;font-size:13px}
 
+/* view switch */
+.viewbar{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.viewbar[hidden]{display:none}
+.viewbar .kicker{margin-right:4px}
+.vlabel{font-size:13.5px;color:var(--faint);transition:color .15s;cursor:pointer;user-select:none}
+.vlabel.on{color:var(--ink);font-weight:600}
+.switch{position:relative;width:46px;height:26px;border-radius:13px;border:0;padding:0;flex:none;
+  background:var(--line);transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+.viewbar .vhint{margin-left:auto;font-size:11.5px;color:var(--faint)}
+@media (max-width:720px){.viewbar .vhint{display:none}}
+
 /* sidebar */
 .side{position:sticky;top:64px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .side summary{list-style:none;padding:13px 16px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:baseline;cursor:pointer}
@@ -239,6 +255,7 @@ select.field{max-width:min(360px,100%)}
 <main class="wrap layout" id="layout">
   <section>
     <p class="lead" id="lead"></p>
+    <div class="viewbar" id="viewbar"></div>
     <div id="list"></div>
   </section>
   <details class="side" id="side">
@@ -536,7 +553,7 @@ const BY_KEY = Object.fromEntries(ITEMS.map(i => [i.key, i]));
 
 /* ================================================================ state */
 let state = {st:{}, own:{}, note:{}, due:{}, prod:[]};
-const ui = {tab:"cis", ig:0, st:-1, fn:"", cv:0, cat:0, base:false, owner:false, q:"", byFn:false, closed:new Set(), open:new Set()};
+const ui = {tab:"cis", ig:0, st:-1, fn:"", cv:0, cat:0, base:false, q:"", byFn:false, closed:new Set(), open:new Set()};
 let COV = {};
 
 const stOf = k => state.st[k] ?? 0;
@@ -584,7 +601,6 @@ function visible(it){
   }
   if (it.fw === "dss" && ui.base && ui.cat && !it.tiers.includes(ui.cat)) return false;
   if (ui.st !== -1 && stOf(k) !== ui.st) return false;
-  if (ui.owner && !(state.own[k] || "").trim()) return false;
   if (ui.q){
     const hay = `${it.id} ${it.ua} ${it.en} ${state.own[k] || ""} ${state.note[k] || ""}`.toLowerCase();
     if (!hay.includes(ui.q)) return false;
@@ -620,8 +636,6 @@ function renderToolbar(){
   }
   html += seg("st", [[-1, "СТАТУС"], [0, "·"], [1, "~"], [2, "✓"], [3, "—"]], ui.st);
   html += `<input class="field" type="search" data-q value="${esc(ui.q)}" placeholder="Пошук за ID, назвою, відповідальним…" autocomplete="off">`;
-  html += `<label class="check"><input type="checkbox" data-chk="owner"${ui.owner ? " checked" : ""}> З ВІДПОВІДАЛЬНИМ</label>`;
-  if (ui.tab === "cis") html += `<button class="ghost" data-act="byfn">${ui.byFn ? "ЗА КОНТРОЛЯМИ" : "ЗА CSF"}</button>`;
   html += `<details class="menu"><summary class="ghost">ДІЇ ▾</summary><div class="menu-list">
       <button data-act="collapse">Згорнути / розгорнути все</button>
       <button data-act="csv">Експорт CSV (усі фреймворки)</button>
@@ -720,6 +734,17 @@ function row(it){
     </div>` : ""}`;
 }
 
+function renderViewbar(){
+  const vb = $("viewbar");
+  vb.hidden = ui.tab !== "cis";
+  if (vb.hidden) return;
+  vb.innerHTML = `<span class="kicker">Групувати</span>
+    <span class="vlabel${ui.byFn ? "" : " on"}" data-act="byfn-off">За контролями CIS</span>
+    <button class="switch" role="switch" aria-checked="${ui.byFn}" aria-label="Групувати за функціями NIST CSF 2.0" data-act="byfn"></button>
+    <span class="vlabel${ui.byFn ? " on" : ""}" data-act="byfn-on">За функціями NIST CSF 2.0</span>
+    <span class="vhint">${ui.byFn ? "6 функцій: GV · ID · PR · DE · RS · RC" : "18 контролів CIS"}</span>`;
+}
+
 function renderSide(){
   const side = $("side");
   const on = ui.tab === "cis";
@@ -742,7 +767,7 @@ function renderSide(){
 
 function render(full = false){
   computeCov();
-  if (full){ renderTabs(); renderToolbar(); renderSide(); }
+  if (full){ renderTabs(); renderToolbar(); renderViewbar(); renderSide(); }
   renderMetrics(); renderRail(); renderList();
 }
 
@@ -771,7 +796,6 @@ document.addEventListener("change", e => {
   const el = e.target;
   if (el.dataset.sel === "cat"){ ui.cat = +el.value; return render(); }
   if (el.dataset.chk === "base"){ ui.base = el.checked; return render(); }
-  if (el.dataset.chk === "owner"){ ui.owner = el.checked; return render(); }
   if (el.dataset.prod){ const s = new Set(state.prod); el.checked ? s.add(el.dataset.prod) : s.delete(el.dataset.prod); state.prod = [...s]; save(); render(); renderSide(); return; }
   if (el.dataset.sel === "preset"){ if (el.value){ state.prod = [...PRESETS[el.value]]; save(); render(); renderSide(); } return; }
   if (el.id === "file" && el.files[0]){
@@ -795,7 +819,11 @@ document.addEventListener("keydown", e => {
 });
 
 function act(a){
-  if (a === "byfn"){ ui.byFn = !ui.byFn; renderToolbar(); return render(); }
+  if (a === "byfn" || a === "byfn-on" || a === "byfn-off"){
+    const next = a === "byfn" ? !ui.byFn : a === "byfn-on";
+    if (next === ui.byFn) return;
+    ui.byFn = next; renderViewbar(); return render();
+  }
   if (a === "collapse"){
     const ks = currentGroups().map(g => g.key);
     const anyOpen = ks.some(k => !ui.closed.has(k));
