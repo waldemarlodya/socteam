@@ -193,6 +193,11 @@ select.field{max-width:min(360px,100%)}
 .fw-tile input:focus-visible + .fw-box{outline:2px solid var(--mc);outline-offset:2px}
 .fw-txt b{display:block;font-size:14px;font-weight:600}
 .fw-txt small{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.fw-sub{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:8px;padding:10px 12px;
+  border:1px solid var(--mc);border-left-width:3px;border-radius:9px;background:color-mix(in srgb,var(--mc) 5%,var(--card))}
+.fw-sub .kicker{color:var(--mc)}
+.fw-sub .fw-note{margin-left:auto}
+.check.off{opacity:.45;cursor:not-allowed}
 .fw-opts{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
 .fw-opts.off{opacity:.45}
 .fw-only{display:inline-flex;align-items:center;gap:10px}
@@ -202,7 +207,7 @@ select.field{max-width:min(360px,100%)}
 .chip.mk::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mc);margin-right:5px}
 .sg.faded{opacity:.42}
 .sg.faded:hover{opacity:.9}
-@media (max-width:720px){.fw-tiles{grid-template-columns:1fr}.fw-sum,.fw-note{margin-left:0}}
+@media (max-width:720px){.fw-tiles{grid-template-columns:1fr}.fw-sum,.fw-note,.fw-sub .fw-note{margin-left:0}}
 
 /* view switch */
 .viewbar{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;
@@ -600,14 +605,24 @@ const MAPS = {
 };
 const REV = {};            // рамка → safeguard → [елементи]
 Object.entries(MAPS).forEach(([f, m]) => { REV[f] = {}; m.els.forEach(e => e.sg.forEach(s => (REV[f][s] ??= []).push(e))); });
+const TIERS = Object.fromEntries(DSS.map(x => [x[0], x[2]]));      // підкатегорія CSF → категорії, для яких базова (план ДССЗЗІ)
+const isBaseCsf = id => !!state.cat && (TIERS[id] || []).includes(state.cat);
+const csfBaseOnly = () => state.base && !!state.cat;
+let EREV = REV;                                                      // REV з урахуванням фільтра «лише базові» для NIST
+function computeEff(){
+  if (!csfBaseOnly()){ EREV = REV; return; }
+  const c = {};
+  MAPS.csf.els.filter(e => isBaseCsf(e.id)).forEach(e => e.sg.forEach(s => (c[s] ??= []).push(e)));
+  EREV = {...REV, csf:c};
+}
 const fwSel = () => state.fws.filter(f => MAPS[f]);
 const marked = it => { const s = fwSel(); if (!s.length) return false;
-  return ui.fwMode === "all" ? s.every(f => REV[f][it.key]) : s.some(f => REV[f][it.key]); };
+  return ui.fwMode === "all" ? s.every(f => EREV[f][it.key]) : s.some(f => EREV[f][it.key]); };
 const sgList = ids => ids.map(s => `${s} ${BY_KEY[s]?.ua || ""}`).join("\n");
 
 /* ================================================================ state */
-let state = {st:{}, own:{}, note:{}, due:{}, prod:[], fws:[]};
-const ui = {tab:"cis", ig:0, st:-1, fn:"", cv:0, cat:0, base:false, fwMode:"any", fwOnly:false, q:"", byFn:false, closed:new Set(), open:new Set()};
+let state = {st:{}, own:{}, note:{}, due:{}, prod:[], fws:[], cat:0, base:false};
+const ui = {tab:"cis", ig:0, st:-1, fn:"", cv:0, fwMode:"any", fwOnly:false, q:"", byFn:false, closed:new Set(), open:new Set()};
 let COV = {};
 
 const stOf = k => state.st[k] ?? 0;
@@ -641,7 +656,7 @@ async function load(){
   try{ const v = localStorage.getItem(STORAGE_KEY); if (v) return JSON.parse(v); }catch(e){}
   return null;
 }
-function hydrate(s){ state = {st:s.st||{}, own:s.own||{}, note:s.note||{}, due:s.due||{}, prod:s.prod||[], fws:s.fws||[]}; }
+function hydrate(s){ state = {st:s.st||{}, own:s.own||{}, note:s.note||{}, due:s.due||{}, prod:s.prod||[], fws:s.fws||[], cat:+s.cat||0, base:!!s.base}; }
 function flash(t){ const el = $("flash"); el.textContent = t; clearTimeout(flashT); flashT = setTimeout(() => el.textContent = "", 1800); }
 
 /* ================================================================ filtering */
@@ -654,7 +669,7 @@ function visible(it){
     if (ui.cv === 2 && COV[k]) return false;
     if (ui.fwOnly && fwSel().length && !marked(it)) return false;
   }
-  if (it.fw === "dss" && ui.base && ui.cat && !it.tiers.includes(ui.cat)) return false;
+  if (it.fw === "dss" && state.base && state.cat && !it.tiers.includes(state.cat)) return false;
   if (ui.st !== -1 && stOf(k) !== ui.st) return false;
   if (ui.q){
     const hay = `${it.id} ${it.ua} ${it.en} ${state.own[k] || ""} ${state.note[k] || ""}`.toLowerCase();
@@ -664,7 +679,7 @@ function visible(it){
 }
 const currentGroups = () => ui.tab === "cis" && ui.byFn ? GROUPS.cisFn : GROUPS[ui.tab];
 const currentItems  = () => ITEMS.filter(i => i.fw === ui.tab);
-const isBase = it => it.fw === "dss" && ui.cat && it.tiers.includes(ui.cat);
+const isBase = it => it.fw === "dss" && state.cat && it.tiers.includes(state.cat);
 
 /* ================================================================ render */
 const seg = (name, opts, cur) =>
@@ -686,8 +701,8 @@ function renderToolbar(){
   }
   if (ui.tab === "dss"){
     html += `<select class="field" data-sel="cat">${CATS.map((c, i) =>
-      `<option value="${i}"${i === ui.cat ? " selected" : ""}>${i ? c[0] : "Категорія суб'єкта: не обрано"}</option>`).join("")}</select>`;
-    html += `<label class="check"><input type="checkbox" data-chk="base"${ui.base ? " checked" : ""}> ЛИШЕ БАЗОВІ</label>`;
+      `<option value="${i}"${i === state.cat ? " selected" : ""}>${i ? c[0] : "Категорія суб'єкта: не обрано"}</option>`).join("")}</select>`;
+    html += `<label class="check${state.cat ? "" : " off"}"><input type="checkbox" data-chk="base"${state.base ? " checked" : ""}${state.cat ? "" : " disabled"}> ЛИШЕ БАЗОВІ</label>`;
   }
   html += seg("st", [[-1, "СТАТУС"], [0, "·"], [1, "~"], [2, "✓"], [3, "—"]], ui.st);
   html += `<input class="field" type="search" data-q value="${esc(ui.q)}" placeholder="Пошук за ID, назвою, відповідальним…" autocomplete="off">`;
@@ -715,7 +730,7 @@ function renderMetrics(){
     const cov = items.filter(i => COV[i.key]).length;
     m = [[pct(items) + "%", "виконано"], [pct(items.filter(i => i.ig === 1)) + "%", "IG1"], [gaps(items), "прогалин"],
          [Math.round(cov / items.length * 100) + "%", "покриття", "ok"]];
-  } else if (ui.tab === "dss" && ui.cat){
+  } else if (ui.tab === "dss" && state.cat){
     const base = items.filter(isBase);
     m = [[pct(items) + "%", "виконано"], [pct(base) + "%", "базові", "ok"], [gaps(base), "прогалин у базових"], [base.length, "базових заходів"]];
   } else {
@@ -747,7 +762,7 @@ function renderList(){
     const bar = [2, 1, 0, 3].map(v => `<i style="width:${cnt[v] / n * 100}%;background:var(--s${v})"></i>`).join("");
     const extra = ui.tab === "cis" && fwSel().length ? `відмічено ${g.items.filter(marked).length}/${n}`
                 : ui.tab === "cis" ? g.items.filter(i => COV[i.key]).length && `покрито ${g.items.filter(i => COV[i.key]).length}`
-                : ui.tab === "dss" && ui.cat ? g.items.filter(isBase).length && `базових ${g.items.filter(isBase).length}` : "";
+                : ui.tab === "dss" && state.cat ? g.items.filter(isBase).length && `базових ${g.items.filter(isBase).length}` : "";
     const closed = ui.closed.has(g.key);
     out.push(`<section class="grp${closed ? " closed" : ""}" data-k="${g.key}">
       <div class="grp-hd" data-hd="${g.key}" role="button" tabindex="0" aria-expanded="${!closed}">
@@ -783,9 +798,10 @@ function row(it){
   }
   if (it.fw === "cis" && fwSel().length){
     fwSel().forEach(f => {
-      const els = REV[f][k]; if (!els) return;
-      const ids = els.map(e => e.id);
-      const tip = MAPS[f].label + "\n" + els.map(e => `${e.id} — ${e.text.split("\n")[0].slice(0, 140)}`).join("\n");
+      const els = EREV[f][k]; if (!els) return;
+      const star = e => f === "csf" && isBaseCsf(e.id);
+      const ids = els.map(e => e.id + (star(e) ? "★" : ""));
+      const tip = MAPS[f].label + "\n" + els.map(e => `${e.id}${star(e) ? " (базовий)" : ""} — ${e.text.split("\n")[0].slice(0, 140)}`).join("\n");
       chips.push(`<span class="chip mk" data-m="${f}" title="${esc(tip)}">${MAPS[f].short} ${ids.slice(0, 4).join(" · ")}${ids.length > 4 ? ` +${ids.length - 4}` : ""}</span>`);
     });
     cls += marked(it) ? " marked" : " faded";
@@ -811,7 +827,6 @@ function renderFwbar(){
   bar.hidden = ui.tab !== "cis";
   if (bar.hidden) return;
   const sel = fwSel();
-  const union = new Set(sel.flatMap(f => Object.keys(REV[f])));
   const hit = ITEMS.filter(i => i.fw === "cis" && marked(i)).length;
   bar.innerHTML = `
     <div class="fw-head">
@@ -823,9 +838,20 @@ function renderFwbar(){
       return `<label class="fw-tile${on ? " on" : ""}" data-m="${f}">
         <input type="checkbox" data-fw="${f}"${on ? " checked" : ""}>
         <span class="fw-box" aria-hidden="true"></span>
-        <span class="fw-txt"><b>${m.label}</b><small>${m.els.length} ${m.unit} → ${Object.keys(REV[f]).length} safeguards</small></span>
+        <span class="fw-txt"><b>${m.label}</b><small>${f === "csf" && csfBaseOnly()
+          ? `${m.els.filter(e => isBaseCsf(e.id)).length} базових із ${m.els.length} → ${Object.keys(EREV.csf).length} safeguards`
+          : `${m.els.length} ${m.unit} → ${Object.keys(REV[f]).length} safeguards`}</small></span>
       </label>`;
     }).join("")}</div>
+    ${sel.includes("csf") ? `<div class="fw-sub" data-m="csf">
+      <span class="kicker">NIST CSF 2.0 · базові заходи плану ДССЗЗІ</span>
+      <select class="field" data-sel="cat">${CATS.map((c, i) =>
+        `<option value="${i}"${i === state.cat ? " selected" : ""}>${i ? c[0] : "Категорія суб'єкта: не обрано"}</option>`).join("")}</select>
+      <label class="check${state.cat ? "" : " off"}"><input type="checkbox" data-chk="base"${state.base ? " checked" : ""}${state.cat ? "" : " disabled"}> ЛИШЕ БАЗОВІ</label>
+      <span class="fw-note">${state.cat
+        ? `базових для категорії: ${MAPS.csf.els.filter(e => isBaseCsf(e.id)).length} із ${MAPS.csf.els.length} підкатегорій з мапінгом`
+        : "оберіть категорію, щоб бачити базові підкатегорії"}</span>
+    </div>` : ""}
     <div class="fw-opts${sel.length ? "" : " off"}">
       ${sel.length > 1 ? `<span class="kicker">Відмічати</span>${seg("fwMode", [["any", "БУДЬ-ЯКИЙ З ОБРАНИХ"], ["all", "УСІ ОБРАНІ ОДНОЧАСНО"]], ui.fwMode)}` : ""}
       <span class="fw-only">
@@ -833,7 +859,7 @@ function renderFwbar(){
         <button class="switch" role="switch" aria-checked="${ui.fwOnly}" aria-label="Показувати лише відмічені safeguards" data-act="fwonly"${sel.length ? "" : " disabled"}></button>
         <span class="vlabel${ui.fwOnly ? " on" : ""}" data-act="fwonly-on">Лише відмічені</span>
       </span>
-      ${sel.length > 1 && ui.fwMode === "any" ? `<span class="fw-note">перетин: ${ITEMS.filter(i => i.fw === "cis" && sel.every(f => REV[f][i.key])).length} safeguards у всіх обраних</span>` : ""}
+      ${sel.length > 1 && ui.fwMode === "any" ? `<span class="fw-note">перетин: ${ITEMS.filter(i => i.fw === "cis" && sel.every(f => EREV[f][i.key])).length} safeguards у всіх обраних</span>` : ""}
     </div>`;
 }
 
@@ -869,7 +895,7 @@ function renderSide(){
 }
 
 function render(full = false){
-  computeCov();
+  computeCov(); computeEff();
   if (full){ renderTabs(); renderToolbar(); renderViewbar(); renderSide(); }
   renderFwbar();
   renderMetrics(); renderRail(); renderList();
@@ -898,7 +924,7 @@ document.addEventListener("click", e => {
 
 document.addEventListener("change", e => {
   const el = e.target;
-  if (el.dataset.sel === "cat"){ ui.cat = +el.value; return render(); }
+  if (el.dataset.sel === "cat"){ state.cat = +el.value; save(); return render(true); }
   if (el.dataset.fw){
     const s = new Set(state.fws); el.checked ? s.add(el.dataset.fw) : s.delete(el.dataset.fw);
     state.fws = Object.keys(MAPS).filter(f => s.has(f));
@@ -906,7 +932,7 @@ document.addEventListener("change", e => {
     if (state.fws.length < 2) ui.fwMode = "any";
     save(); return render();
   }
-  if (el.dataset.chk === "base"){ ui.base = el.checked; return render(); }
+  if (el.dataset.chk === "base"){ state.base = el.checked; save(); return render(true); }
   if (el.dataset.prod){ const s = new Set(state.prod); el.checked ? s.add(el.dataset.prod) : s.delete(el.dataset.prod); state.prod = [...s]; save(); render(); renderSide(); return; }
   if (el.dataset.sel === "preset"){ if (el.value){ state.prod = [...PRESETS[el.value]]; save(); render(); renderSide(); } return; }
   if (el.id === "file" && el.files[0]){
@@ -952,7 +978,7 @@ function act(a){
   if (a === "save") return download("cyber-tracker-progress.json", JSON.stringify({app:"cyber-tracker", saved:new Date().toISOString(), state}, null, 2), "application/json");
   if (a === "reset"){
     if (!confirm("Скинути всі статуси, відповідальних, терміни та примітки в усіх фреймворках?")) return;
-    state = {st:{}, own:{}, note:{}, due:{}, prod:state.prod, fws:state.fws}; ui.open.clear(); save(); return render();
+    state = {st:{}, own:{}, note:{}, due:{}, prod:state.prod, fws:state.fws, cat:state.cat, base:state.base}; ui.open.clear(); save(); return render();
   }
   if (a === "csv"){
     const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
