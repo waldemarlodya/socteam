@@ -89,7 +89,7 @@ h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.01em;line-height:1.1
 .legend .flash{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
 
 /* ================================================================ toolbar (sticky) */
-.toolbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);
+.toolbar{position:sticky;top:var(--dock-h);z-index:20;transition:top .35s cubic-bezier(.2,.8,.2,1);background:color-mix(in srgb,var(--bg) 97%,transparent);
   backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 0}
 .toolbar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
@@ -236,14 +236,14 @@ select.field{max-width:min(360px,100%)}
 .switch[aria-checked="true"]{background:var(--accent)}
 .switch[aria-checked="true"]::after{transform:translateX(20px)}
 .viewbar .vhint{margin-left:auto;font-size:11.5px;color:var(--faint)}
-@media (max-width:720px){.viewbar .vhint{display:none}}
+@media (max-width:720px){.viewbar .vhint,.viewbar .kicker{display:none}.viewbar{gap:10px;padding:10px 12px}.viewbar .vlabel{font-size:12.5px;line-height:1.3}}
 
 /* sidebar */
-.side{position:sticky;top:64px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.side{position:sticky;top:calc(var(--dock-h) + var(--tb-h, 60px) + 14px);transition:top .35s cubic-bezier(.2,.8,.2,1);background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
 .side summary{list-style:none;padding:13px 16px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:baseline;cursor:pointer}
 .side summary::-webkit-details-marker{display:none}
 .side summary .kicker{margin-left:auto;letter-spacing:.05em;text-transform:none}
-.side-body{border-top:1px solid var(--line);padding:12px 16px 14px;max-height:calc(100vh - 140px);overflow:auto}
+.side-body{border-top:1px solid var(--line);padding:12px 16px 14px;max-height:calc(100vh - var(--dock-h) - var(--tb-h, 60px) - 80px);overflow:auto}
 .side select{width:100%;margin-bottom:12px}
 .pgroup{margin-bottom:12px}
 .cat-io{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:11.5px;color:var(--faint)}
@@ -280,6 +280,43 @@ select.field{max-width:min(360px,100%)}
   .note{grid-template-columns:1fr;padding-left:16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---------- закріплена панель показників */
+:root{--dock-h:0px}
+body.docked{--dock-h:48px}
+.dock{position:fixed;top:0;left:0;right:0;height:48px;z-index:25;opacity:0;pointer-events:none;
+  background:color-mix(in srgb,var(--bg) 98%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);transition:opacity .28s ease, box-shadow .35s ease}
+body.docked .dock{opacity:1;pointer-events:auto;box-shadow:0 6px 18px -14px rgba(15,20,30,.45)}
+.dock-in{height:100%;display:flex;align-items:center;gap:14px}
+.dock-brand{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:baseline;gap:6px}
+.dock-brand b{color:var(--accent)}
+.dock-brand i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.dock-brand i::before{content:"·";margin-right:6px}
+.dock-flash{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock-metrics{margin-left:auto;display:flex;gap:20px;align-items:baseline}
+.dm{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.dm b{display:inline-block;transform-origin:0 0;font-family:var(--mono);font-size:17px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.dm b.ok{color:var(--s2)} .dm b.sel{color:var(--accent)}
+.dm b small{font-size:11px;font-weight:500;color:var(--faint);letter-spacing:0;margin-left:1px}
+.dm span{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);transition:opacity .3s ease .12s}
+body:not(.docked) .dm span{opacity:0}
+.dock-top{flex:none;width:30px;height:28px;border:1px solid var(--line);background:var(--card);border-radius:7px;color:var(--dim);font-size:14px;line-height:1}
+.dock-top:hover{border-color:var(--accent);color:var(--accent)}
+.metric b{transform-origin:100% 0}
+.grp{scroll-margin-top:calc(var(--dock-h) + var(--tb-h, 60px) + 12px)}
+.dm .l-short{display:none}
+@media (max-width:900px){.dock-brand,.dock-flash{display:none}.dock-metrics{margin-left:0;gap:14px}.dm .l-full{display:none}.dm .l-short{display:inline}}
+@media (max-width:480px){.dm span{font-size:8.5px;letter-spacing:.04em}.dm b{font-size:15px}.dock-metrics{gap:10px}}
+@media (max-width:720px){
+  .toolbar .wrap{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .toolbar .wrap::-webkit-scrollbar{display:none}
+  .toolbar .wrap > *{flex:none}
+  .toolbar input.field[type=search]{flex:0 0 190px;min-width:0}
+  .reset-view{margin-left:0}
+  .menu-list{position:fixed;right:12px;top:calc(var(--dock-h) + var(--tb-h, 60px) + 4px)}
+}
+@media print{.dock{display:none!important}}
+
 @media print{
   .toolbar,.rail,.legend,.tabs,.side,.pen,.stat button:not([aria-pressed="true"]),.lead{display:none!important}
   body{background:#fff;color:#000}
@@ -289,6 +326,14 @@ select.field{max-width:min(360px,100%)}
 </style>
 </head>
 <body>
+<div class="dock" id="dock" aria-hidden="true" inert>
+  <div class="wrap dock-in">
+    <span class="dock-brand">Трекер кіберзахисту <b>SOC.team</b><i id="dock-tab"></i></span>
+    <span class="dock-flash" id="dock-flash"></span>
+    <div class="dock-metrics" id="dock-metrics"></div>
+    <button class="dock-top" data-act="totop" title="Нагору" aria-label="Прокрутити нагору">↑</button>
+  </div>
+</div>
 
 <header class="top">
   <div class="wrap">
@@ -742,7 +787,11 @@ async function load(){
   return null;
 }
 function hydrate(s){ state = {st:s.st||{}, own:s.own||{}, note:s.note||{}, due:s.due||{}, prod:s.prod||[], fws:s.fws||[], cat:+s.cat||0, base:!!s.base, remote:s.remote||null}; }
-function flash(t, low = false){ const el = $("flash"); if (low && el.textContent) return; el.textContent = t; clearTimeout(flashT); flashT = setTimeout(() => el.textContent = "", 1800); }
+function flash(t, low = false){
+  const el = $("flash"), dk = $("dock-flash"); if (low && el.textContent) return;
+  el.textContent = dk.textContent = t; clearTimeout(flashT);
+  flashT = setTimeout(() => el.textContent = dk.textContent = "", 1800);
+}
 
 /* ================================================================ filtering */
 function inScope(it){
@@ -840,6 +889,8 @@ function renderMetrics(){
     m.push([base.length ? pct(base) + "%" : "—", `базові виконано (${base.length})`, "ok"]);
   }
   $("metrics").innerHTML = m.map(x => `<div class="metric"><b class="${x[2] || ""}">${x[0]}</b><span>${x[1]}</span></div>`).join("");
+  $("dock-metrics").innerHTML = m.map(x => `<div class="dm"><b class="${x[2] || ""}">${x[0]}</b><span><span class="l-full">${x[1]}</span><span class="l-short">${x[1].split(" ")[0]}</span></span></div>`).join("");
+  $("dock-tab").textContent = FW[ui.tab].tab || FW[ui.tab].label;
   $("lead").innerHTML = FW[ui.tab].lead;
 }
 
@@ -1002,11 +1053,47 @@ function renderSide(){
     <div class="fine">Заливка рядка — продукт закриває safeguard; блідіша — частково. Це не статус впровадження: продукт ще треба налаштувати. Мапінг — експертна оцінка, не офіційний документ вендора. Xopero, Safetica та всі позиції «постачальник на вибір» ліцензуються окремо від наборів ESET PROTECT; категорії без вендора — плейсхолдери під будь-якого постачальника.</div>`;
 }
 
+/* FLIP: цифри летять із шапки в закріплену панель і назад */
+let docked = false, dockRaf = 0;
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function setDock(on){
+  if (on === docked) return;
+  const src = [...$(on ? "metrics" : "dock-metrics").querySelectorAll("b")].map(b => b.getBoundingClientRect());
+  docked = on;
+  document.body.classList.toggle("docked", on);
+  const dock = $("dock"); dock.inert = !on; dock.setAttribute("aria-hidden", String(!on));
+  if (calm()) return;
+  [...$(on ? "dock-metrics" : "metrics").querySelectorAll("b")].forEach((b, i) => {
+    const f = src[i]; if (!f || !f.height) return;
+    const t = b.getBoundingClientRect(); if (!t.height) return;
+    const s = f.height / t.height;
+    const dx = on ? f.left - t.left : f.right - t.right;       // у шапці цифри вирівняні праворуч
+    b.animate([{transform:`translate(${dx}px, ${f.top - t.top}px) scale(${s})`, opacity:.35},
+               {transform:"none", opacity:1}],
+              {duration:520, delay:i * 45, easing:"cubic-bezier(.2,.8,.2,1)", fill:"backwards"});
+  });
+}
+new ResizeObserver(([e]) => document.documentElement.style.setProperty("--tb-h", Math.ceil(e.target.offsetHeight) + "px"))
+  .observe(document.querySelector(".toolbar"));
+/* прокрутка до групи з урахуванням смуги, яка з'явиться після прокрутки */
+function scrollToGroup(k){
+  const el = document.querySelector(`.grp[data-k="${k}"]`); if (!el) return;
+  const tb = document.querySelector(".toolbar").offsetHeight;
+  const y = el.getBoundingClientRect().top + window.scrollY;
+  const metricsBottom = $("metrics").getBoundingClientRect().bottom + window.scrollY;
+  const willDock = y - tb - 12 > metricsBottom - 48;
+  window.scrollTo({top:Math.max(0, y - tb - 12 - (willDock ? 48 : 0)), behavior:calm() ? "auto" : "smooth"});
+}
+function checkDock(){ const r = $("metrics").getBoundingClientRect(); setDock(r.bottom < 48 && window.scrollY > 0); }
+window.addEventListener("scroll", () => { if (!dockRaf) dockRaf = requestAnimationFrame(() => { dockRaf = 0; checkDock(); }); }, {passive:true});
+window.addEventListener("resize", () => checkDock(), {passive:true});
+
 function render(full = false){
   computeCov(); computeEff();
   if (full){ renderTabs(); renderToolbar(); renderViewbar(); renderSide(); }
   renderFwbar();
   renderMetrics(); renderRail(); renderList();
+  checkDock();
 }
 
 /* ================================================================ events (одна делегована точка) */
@@ -1019,7 +1106,7 @@ document.addEventListener("click", e => {
     document.querySelector(`[data-own="${CSS.escape(k)}"]`)?.focus(); return; }
   if (t.dataset.hd){ const k = t.dataset.hd; ui.closed.has(k) ? ui.closed.delete(k) : ui.closed.add(k); return renderList(); }
   if (t.dataset.go){ ui.closed.delete(t.dataset.go); renderList();
-    document.querySelector(`.grp[data-k="${t.dataset.go}"]`)?.scrollIntoView({behavior:"smooth", block:"start"}); return; }
+    scrollToGroup(t.dataset.go); return; }
   const segEl = t.closest("[data-seg]");
   if (segEl){
     const name = segEl.dataset.seg, v = t.dataset.v;
@@ -1072,6 +1159,7 @@ const isDirty = () => Object.entries(DEFAULT_UI).some(([k, v]) => ui[k] !== v)
   || state.fws.length || state.cat || state.base || state.prod.length || ui.closed.size || ui.open.size;
 
 function act(a){
+  if (a === "totop") return window.scrollTo({top:0, behavior:calm() ? "auto" : "smooth"});
   if (a === "catexport") return download("products-catalog.csv", catalogToCsv(CATALOG), "text/csv");
   if (a === "catsync") return syncCatalog(true);
   if (a === "resetview"){
