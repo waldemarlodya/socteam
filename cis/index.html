@@ -707,7 +707,7 @@ const sgList = ids => ids.map(s => `${s} ${BY_KEY[s]?.ua || ""}`).join("\n");
 
 /* ================================================================ state */
 let state = {st:{}, own:{}, note:{}, due:{}, prod:[], fws:[], cat:0, base:false, remote:null};
-const ui = {tab:"cis", mode:"track", ig:3, st:-1, fn:"", cv:0, fwMode:"any", fwOnly:false, q:"", byFn:false, closed:new Set(), open:new Set()};
+const ui = {tab:"cis", mode:"an", ig:3, st:-1, fn:"", cv:0, fwMode:"any", fwOnly:false, q:"", byFn:false, closed:new Set(), open:new Set()};
 let COV = {};
 
 const stOf = k => state.st[k] ?? 0;
@@ -1067,7 +1067,7 @@ document.addEventListener("keydown", e => {
   if ((e.key === "Enter" || e.key === " ") && e.target.dataset.hd){ e.preventDefault(); e.target.click(); }
 });
 
-const DEFAULT_UI = {mode:"track", ig:3, st:-1, fn:"", cv:0, fwMode:"any", fwOnly:false, q:"", byFn:false};
+const DEFAULT_UI = {mode:"an", ig:3, st:-1, fn:"", cv:0, fwMode:"any", fwOnly:false, q:"", byFn:false};
 const isDirty = () => Object.entries(DEFAULT_UI).some(([k, v]) => ui[k] !== v)
   || state.fws.length || state.cat || state.base || state.prod.length || ui.closed.size || ui.open.size;
 
