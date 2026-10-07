@@ -80,6 +80,21 @@ h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.01em;line-height:1.1
 .lang button:hover{background:var(--soft)}
 .lang button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 
+/* перемикач мови: слайдер із прапором обраної мови */
+.tabs .langsw{margin-left:auto;align-self:center;display:inline-flex;align-items:center;gap:9px;padding-left:6px}
+.langsw .vlabel{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--faint);cursor:pointer;user-select:none;transition:color .2s}
+.langsw .vlabel.on{color:var(--ink);font-weight:600}
+.langsw .vlabel:hover{color:var(--ink)}
+.switch.flag,.switch.flag[aria-checked="true"]{width:50px;height:28px;border-radius:14px;overflow:hidden;
+  background:#012169 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='s'%3E%3Cpath d='M0,0v30h60V0z'/%3E%3C/clipPath%3E%3CclipPath id='t'%3E%3Cpath d='M30,15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cg clip-path='url%28%23s%29'%3E%3Cpath d='M0,0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0,0L60,30M60,0L0,30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0,0L60,30M60,0L0,30' clip-path='url%28%23t%29' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30,0v30M0,15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30,0v30M0,15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.12)}
+.switch.flag::before{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(#0057B7 0 50%, #FFD700 50% 100%);transition:opacity .3s ease}
+.switch.flag[aria-checked="true"]::before{opacity:0}
+.switch.flag::after{top:3px;left:3px;width:22px;height:22px;z-index:1;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.switch.flag[aria-checked="true"]::after{transform:translateX(22px)}
+.switch.flag:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
 /* rail: one cell per item of the active framework */
 .rail{display:flex;flex-wrap:wrap;gap:2px;padding:14px 0 0}
 .cell{width:9px;height:9px;border-radius:2px;background:var(--s0);opacity:.45;transition:transform .12s,opacity .12s}
@@ -875,8 +890,13 @@ function applyStatic(){
 }
 function setLang(l){
   if (l === LANG || !I18N[l]) return;
+  const sw = document.querySelector(".switch.flag"), had = document.activeElement === sw, anim = sw && !calm();
+  if (anim){                                   // спершу повзунок і прапор, потім — перемальовування інтерфейсу
+    sw.setAttribute("aria-checked", String(l === "en"));
+    document.querySelectorAll(".langsw .vlabel").forEach(v => v.classList.toggle("on", v.dataset.lang === l));
+  }
   LANG = l; state.lang = l; save();
-  applyStatic(); render(true);
+  setTimeout(() => { applyStatic(); render(true); if (had) document.querySelector(".switch.flag")?.focus(); }, anim ? 300 : 0);
 }
 
 /* Один нормалізований набір елементів для всіх фреймворків.
@@ -1015,8 +1035,10 @@ const seg = (name, opts, cur) =>
 function renderTabs(){
   $("tabs").innerHTML = Object.keys(I18N.uk.fw).map(k =>
     `<button class="tab" role="tab" data-tab="${k}" aria-selected="${k === ui.tab}" title="${esc(fw(k).label)}">${fw(k).tab}<u>${GROUPS[k].reduce((a, g) => a + g.items.length, 0)}</u></button>`).join("")
-    + `<span class="lang" role="group" aria-label="${t("langAria")}">${[["uk", "УКР"], ["en", "ENG"]].map(([l, n]) =>
-      `<button data-lang="${l}" aria-pressed="${l === LANG}">${n}</button>`).join("")}</span>`;
+    + `<span class="langsw" role="group" aria-label="${t("langAria")}">
+      <span class="vlabel${LANG === "uk" ? " on" : ""}" data-lang="uk">УКР</span>
+      <button class="switch flag" role="switch" aria-checked="${LANG === "en"}" aria-label="${t("langAria")}: ${LANG === "en" ? "English" : "Українська"}" data-lang="toggle"></button>
+      <span class="vlabel${LANG === "en" ? " on" : ""}" data-lang="en">ENG</span></span>`;
 }
 
 function renderToolbar(){
@@ -1290,7 +1312,7 @@ function render(full = false){
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-lang],[data-tab],[data-seg] button,[data-set],[data-open],[data-hd],[data-go],[data-act]");
   if (!t) return;
-  if (t.dataset.lang) return setLang(t.dataset.lang);
+  if (t.dataset.lang) return setLang(t.dataset.lang === "toggle" ? (LANG === "en" ? "uk" : "en") : t.dataset.lang);
   if (t.dataset.tab){ ui.tab = t.dataset.tab; ui.q = ""; window.scrollTo({top:0}); return render(true); }
   if (t.dataset.set){ state.st[t.dataset.set] = +t.dataset.v; save(); return render(); }
   if (t.dataset.open){ const k = t.dataset.open; ui.open.has(k) ? ui.open.delete(k) : ui.open.add(k); renderList();
