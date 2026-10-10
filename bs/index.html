@@ -11,7 +11,7 @@
 :root{
   --bg:#EEF2F5; --card:#FFFFFF; --ink:#142334; --muted:#5A6B7B; --line:#D3DCE3;
   --accent:#0E7C7B; --accent-soft:#DCEFEE; --accent-ink:#FFFFFF; --warn:#B4531A; --warn-soft:#FBEADF;
-  --off:#A7B3BE;
+  --off:#A7B3BE; --bill:#142334; --bill-ink:#FFFFFF;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -19,100 +19,157 @@
   :root:not([data-theme="light"]){
     --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
     --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --off:#566676;
+    --bill:#E6EDF3; --bill-ink:#0F1A26;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
   --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --off:#566676;
+  --bill:#E6EDF3; --bill-ink:#0F1A26;
 }
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 h1,h2,.num{font-family:"Unbounded","IBM Plex Sans",system-ui,sans-serif}
+button,input,select{font-family:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
-header{margin-bottom:28px}
-header h1{font-size:clamp(1.4rem,3vw,2.1rem);line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em;max-width:22ch}
+header{margin-bottom:24px}
+header h1{font-size:clamp(1.1rem,2.6vw,1.75rem);line-height:1.2;margin:0 0 8px;font-weight:700;letter-spacing:-.01em;max-width:22ch}
 header p{margin:0;color:var(--muted);max-width:62ch}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
 section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px}
-section h2{font-size:1.05rem;font-weight:500;margin:0 0 4px}
-section .hint{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+section h2{font-size:.98rem;font-weight:500;margin:0 0 4px}
+section .hint{color:var(--muted);font-size:.84rem;margin:0 0 14px}
 
-/* devices */
-.dev-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.dev-row input[type=number]{width:120px;font:600 1.4rem "Unbounded",sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
-.dev-row input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
-.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}
-.tier{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.82rem;color:var(--muted);transition:background .2s,border-color .2s}
-.tier b{display:block;color:var(--ink);font-weight:600;font-size:.9rem}
-.tier.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
-@media (max-width:620px){.scale{grid-template-columns:repeat(2,1fr)}}
+/* device tiers */
+.tiers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tier{min-height:54px;border:1px solid var(--line);border-radius:12px;padding:8px 6px;background:var(--card);color:var(--ink);cursor:pointer;text-align:center;line-height:1.2;transition:background .15s,border-color .15s}
+.tier b{display:block;font:600 .92rem "Unbounded",sans-serif;white-space:nowrap}
+.tier span{font-size:.72rem;color:var(--muted)}
+.tier:hover{border-color:var(--accent)}
+.tier[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tier[aria-pressed=true] span{color:inherit;opacity:.85}
+.exact{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:.9rem;color:var(--muted);flex-wrap:wrap}
+.exact input{width:110px;min-height:44px;font:600 16px "IBM Plex Sans",sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 
-/* package matrix — the signature element */
-.matrix-scroll{overflow-x:auto}
-table.matrix{width:100%;border-collapse:separate;border-spacing:0;min-width:560px}
-.matrix th,.matrix td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;font-size:.92rem}
-.matrix td:first-child,.matrix th:first-child{text-align:left}
-.matrix td:first-child{color:var(--ink)}
-.matrix thead th{border-bottom:none;padding:0 6px 8px}
-.pkg-btn{width:100%;font:500 .9rem "Unbounded",sans-serif;padding:12px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+/* packages */
+.pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.pkg-btn{min-height:48px;font:500 .84rem "Unbounded",sans-serif;padding:8px 4px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
 .pkg-btn:hover{border-color:var(--accent)}
+.pkg-btn[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+table.matrix{width:100%;border-collapse:collapse}
+.matrix th,.matrix td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:center;font-size:.86rem}
+.matrix th{font-weight:500;color:var(--muted);font-size:.78rem}
+.matrix td:first-child,.matrix th:first-child{text-align:left}
 .matrix .col-on{background:var(--accent-soft)}
-.matrix thead .col-on{background:none}
-.matrix thead .col-on .pkg-btn{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.matrix tbody tr:last-child td.col-on{border-bottom-left-radius:10px;border-bottom-right-radius:10px}
+.matrix th.col-on{color:var(--ink)}
 .yes{color:var(--accent);font-weight:700}
 .no{color:var(--off)}
-.small{font-size:.8rem;color:var(--muted)}
-.mode{display:flex;gap:8px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.small{font-size:.82rem;color:var(--muted)}
+.mode{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.mode[hidden]{display:none}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.seg button{border:0;background:var(--card);color:var(--ink);padding:8px 16px;font:500 .9rem "IBM Plex Sans",sans-serif;cursor:pointer}
+.seg button{min-height:44px;border:0;background:var(--card);color:var(--ink);padding:8px 18px;font:500 .95rem "IBM Plex Sans",sans-serif;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--card)}
-.mode.disabled{opacity:.45}
-
-details{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
-summary{cursor:pointer;font-weight:500}
-.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
-label.f input,label.f select{font:500 1rem "IBM Plex Sans",sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.link{background:none;border:0;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer;padding:0;text-decoration:underline}
 
 /* on-demand */
-.od{display:grid;grid-template-columns:1fr auto auto auto;gap:10px 14px;align-items:center}
-.od .name{font-weight:500}
-.od .name span{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
-.od .rate{color:var(--muted);font-size:.9rem;white-space:nowrap}
-.od .sum{min-width:80px;text-align:right;font-weight:600}
-.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.step button{width:32px;height:34px;border:0;background:var(--bg);color:var(--ink);font-size:1.1rem;cursor:pointer}
-.step input{width:56px;height:34px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:600 .95rem "IBM Plex Sans",sans-serif;background:var(--card);color:var(--ink)}
-@media (max-width:560px){.od{grid-template-columns:1fr auto}.od .rate{grid-column:1}.od .sum{text-align:right}}
+.od{display:flex;flex-direction:column}
+.od-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.od-row:first-child{border-top:0;padding-top:0}
+.od-row .name{font-weight:500;font-size:.92rem;line-height:1.3}
+.od-row .name span{display:block;font-weight:400;font-size:.78rem;color:var(--muted);margin-top:2px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
+.step button{width:44px;height:44px;border:0;background:var(--bg);color:var(--ink);font-size:1.2rem;cursor:pointer}
+.step input{width:52px;height:44px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:600 16px "IBM Plex Sans",sans-serif;background:var(--card);color:var(--ink);-moz-appearance:textfield}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.unit{font-size:.8rem;color:var(--muted);text-align:center;margin-top:2px}
 
-/* summary */
+/* manager details */
+details.mgr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
+details.mgr>summary{cursor:pointer;font-weight:500;padding:16px 20px;min-height:44px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.mgr>summary::-webkit-details-marker{display:none}
+details.mgr>summary::after{content:"+";font-size:1.3rem;color:var(--muted)}
+details.mgr[open]>summary::after{content:"−"}
+details.mgr .inner{padding:0 20px 20px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+label.f input,label.f select{min-height:44px;font:500 16px "IBM Plex Sans",sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.link{background:none;border:0;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;padding:8px 0;text-decoration:underline}
+.scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:420px}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:center}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl input{width:72px;min-height:40px;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:center;font-size:16px}
+.bd{width:100%;border-collapse:collapse;font-size:.9rem}
+.bd td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.bd td:last-child{text-align:right;white-space:nowrap;padding-left:12px}
+.bd .muted td{color:var(--muted)}
+
+/* bill */
 aside{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
-.bill{background:var(--ink);color:var(--card);border-radius:14px;padding:24px}
-.bill h2{font-size:.95rem;font-weight:500;margin:0 0 14px;color:inherit;opacity:.8}
-.bill .big{font-size:2.3rem;font-weight:700;line-height:1.05}
-.bill .per{opacity:.7;font-size:.9rem;margin-bottom:18px}
-.line{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(127,140,155,.35);font-size:.9rem}
+.bill{background:var(--bill);color:var(--bill-ink);border-radius:14px;padding:24px}
+.bill .ctx{font-size:.84rem;opacity:.8;margin-bottom:12px}
+.bill .big{font-size:1.95rem;font-weight:700;line-height:1.05}
+.bill .per{opacity:.7;font-size:.84rem;margin-bottom:16px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(127,140,155,.35);font-size:.9rem}
 .line span:first-child{opacity:.85}
-.line.off{opacity:.4}
 .line.total{font-weight:600;font-size:1rem}
-.term{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 4px;font-size:.9rem}
-.term input{width:70px;padding:6px 8px;border-radius:8px;border:1px solid rgba(127,140,155,.5);background:transparent;color:inherit;font:600 1rem "IBM Plex Sans",sans-serif;text-align:center}
+.term{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid rgba(127,140,155,.35);font-size:.9rem}
+.term .seg{border-color:rgba(127,140,155,.5)}
+.term .seg button{background:transparent;color:inherit;padding:8px 12px;min-height:40px}
+.term .seg button[aria-pressed=true]{background:var(--bill-ink);color:var(--bill)}
 .alert{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.9rem;font-weight:500}
 .alert[hidden]{display:none}
-.actions{display:flex;gap:8px;margin-top:16px}
-.btn{flex:1;padding:11px 12px;border-radius:10px;border:1px solid var(--card);background:var(--card);color:var(--ink);font:600 .9rem "IBM Plex Sans",sans-serif;cursor:pointer}
-.btn.ghost{background:transparent;color:var(--card);border-color:rgba(127,140,155,.6)}
-.sla{margin-top:14px;font-size:.82rem;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.btn{width:100%;min-height:46px;margin-top:16px;border-radius:10px;border:0;background:var(--bill-ink);color:var(--bill);font:600 .9rem "IBM Plex Sans",sans-serif;cursor:pointer}
+.btn.ghost{margin-top:8px;background:transparent;color:inherit;border:1px solid rgba(127,140,155,.55);font-weight:500}
+.sla{margin:14px 0 12px;font-size:.84rem;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .sla b{color:var(--ink);font-weight:600}
-textarea.copy{width:100%;height:160px;margin-top:10px;border-radius:8px;font:13px/1.4 ui-monospace,Menlo,monospace;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14px/1.4 ui-monospace,Menlo,monospace;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+
+/* mobile bottom bar */
+.mbar{display:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  aside{position:static}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:10;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--bill);color:var(--bill-ink);padding:12px 18px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -6px 20px rgba(0,0,0,.18);transition:transform .2s}
+  .mbar.away{transform:translateY(110%)}
+  .mbar .num{font-size:1.25rem;font-weight:700}
+  .mbar small{display:block;opacity:.7;font-size:.78rem}
+  .mbar button{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid rgba(127,140,155,.6);background:transparent;color:inherit;font:600 .9rem "IBM Plex Sans",sans-serif}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+}
+@media (max-width:620px){
+  body{font-size:14.5px}
+  .wrap{padding:16px 12px 40px}
+  header{margin-bottom:16px}
+  header p{font-size:.88rem}
+  section{padding:14px;border-radius:12px;margin-bottom:12px}
+  .tiers{grid-template-columns:repeat(3,1fr);gap:6px}
+  .tier{min-height:50px;padding:6px 4px}
+  .tier b{font-size:.8rem}
+  .tier span{font-size:.68rem}
+  .pkgs{gap:6px}
+  .pkg-btn{font-size:.7rem;padding:8px 2px;min-height:44px}
+  .od-row{gap:10px;padding:10px 0}
+  .step button{width:40px}
+  .step input{width:44px}
+  /* show only the selected package column */
+  .matrix th:not(:first-child):not(.col-on),.matrix td:not(:first-child):not(.col-on){display:none}
+  .matrix th,.matrix td{padding:8px 6px;font-size:.82rem}
+  .bill{padding:18px}
+  .bill .big{font-size:1.65rem}
+  .term .seg button{padding:6px 10px}
+  .mbar .num{font-size:1.1rem}
+  details.mgr>summary{padding:14px 16px}
+  details.mgr .inner{padding:0 16px 16px}
+}
 @media print{
-  body{background:#fff;color:#000} aside{position:static} .actions,details,.dev-row input[type=range]{display:none}
+  body{background:#fff;color:#000} aside{position:static} .btn,details,.mbar{display:none}
   .bill{background:#fff;color:#000;border:1px solid #000}.grid{grid-template-columns:1fr}
 }
 </style>
@@ -121,105 +178,119 @@ textarea.copy{width:100%;height:160px;margin-top:10px;border-radius:8px;font:13p
 <div class="wrap">
   <header>
     <h1>Калькулятор послуг кіберзахисту ADEON BS</h1>
-    <p>Вкажіть кількість пристроїв і пакет, і калькулятор порахує щомісячну підписку. Разові послуги за вимогою додавайте нижче з потрібною кількістю годин.</p>
+    <p>Оберіть кількість пристроїв і пакет підписки. Разові послуги можна додати окремо.</p>
   </header>
 
   <div class="grid">
     <main>
       <section aria-labelledby="h-dev">
         <h2 id="h-dev">Кількість пристроїв</h2>
-        <p class="hint">Від неї залежать рекомендовані години та коефіцієнт складності.</p>
-        <div class="dev-row">
-          <input type="number" id="devices" min="1" max="100000" value="120" aria-label="Кількість пристроїв">
-          <input type="range" id="devRange" min="1" max="1200" value="120" aria-label="Повзунок кількості пристроїв">
+        <p class="hint">Від неї залежить обсяг робіт і вартість підписки.</p>
+        <div class="tiers" id="tiers" role="group" aria-label="Діапазон пристроїв"></div>
+        <div class="exact">
+          <label for="devices">Або точна кількість:</label>
+          <input type="number" inputmode="numeric" id="devices" min="1" max="100000" value="120">
         </div>
-        <div class="scale" id="scale"></div>
-
-        <details>
-          <summary>Ручне коригування</summary>
-          <p class="small">За замовчуванням значення беруться з таблиці за кількістю пристроїв. Змінюйте, якщо інфраструктура клієнта простіша чи складніша за типову.</p>
-          <div class="fields">
-            <label class="f">Коефіцієнт складності
-              <select id="kOverride">
-                <option value="">Авто</option>
-                <option value="1">× 1.0 — легкий</option>
-                <option value="1.5">× 1.5 — середній</option>
-                <option value="2">× 2.0 — складний</option>
-              </select>
-            </label>
-            <label class="f">Години на місяць: супровід PROTECT
-              <input type="number" id="h1Override" min="0" step="1" placeholder="авто">
-            </label>
-            <label class="f">Години на місяць: Inspect / Threat Hunting
-              <input type="number" id="h2Override" min="0" step="1" placeholder="авто">
-            </label>
-          </div>
-          <p style="margin:10px 0 0"><button class="link" id="resetOverrides" type="button">Повернути автоматичні значення</button></p>
-        </details>
       </section>
 
       <section aria-labelledby="h-pkg">
         <h2 id="h-pkg">Пакет підписки</h2>
-        <p class="hint">Оберіть рівень сервісу. Оплата щомісяця наперед.</p>
-        <div class="matrix-scroll">
-          <table class="matrix" id="matrix">
-            <thead><tr><th></th>
-              <th data-col="0"><button class="pkg-btn" data-pkg="0">Базовий</button></th>
-              <th data-col="1"><button class="pkg-btn" data-pkg="1">Розширений</button></th>
-              <th data-col="2"><button class="pkg-btn" data-pkg="2">Проактивний</button></th>
-            </tr></thead>
-            <tbody></tbody>
-          </table>
+        <p class="hint">Щомісячна оплата наперед.</p>
+        <div class="pkgs" role="group" aria-label="Пакет">
+          <button type="button" class="pkg-btn" data-pkg="0">Базовий</button>
+          <button type="button" class="pkg-btn" data-pkg="1">Розширений</button>
+          <button type="button" class="pkg-btn" data-pkg="2">Проактивний</button>
         </div>
-        <div class="mode" id="modeBox">
-          <span>Режим проактивного моніторингу</span>
+        <table class="matrix" id="matrix">
+          <thead><tr><th>Що входить</th><th data-col="0">Базовий</th><th data-col="1">Розширений</th><th data-col="2">Проактивний</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="mode" id="modeBox" hidden>
+          <span>Режим моніторингу</span>
           <div class="seg" role="group" aria-label="Режим">
             <button type="button" data-mode="85" aria-pressed="true">8/5</button>
             <button type="button" data-mode="247" aria-pressed="false">24/7</button>
           </div>
-          <span class="small">Потрібен підключений сервіс ESET MDR</span>
+          <span class="small">Потрібен сервіс ESET MDR</span>
         </div>
       </section>
 
       <section aria-labelledby="h-od">
         <h2 id="h-od">Послуги за вимогою</h2>
-        <p class="hint">Разово, без підписки або на додачу до неї. Оплата за фактом виконання.</p>
+        <p class="hint">Разово, без підписки або на додачу до неї. Вкажіть орієнтовну кількість годин.</p>
         <div class="od" id="od"></div>
-      </section>
-
-      <section aria-labelledby="h-rates">
-        <h2 id="h-rates">Тарифи</h2>
-        <p class="hint">Ставки з комерційної пропозиції. Змінені значення зберігаються в цьому браузері.</p>
-        <details>
-          <summary>Редагувати ставки та години</summary>
-          <div id="rateEditor"></div>
-          <p style="margin:12px 0 0"><button class="link" id="resetRates" type="button">Відновити ставки з пропозиції</button></p>
-        </details>
       </section>
     </main>
 
-    <aside>
-      <div class="bill" aria-live="polite">
-        <h2>Розрахунок</h2>
-        <div class="alert" id="bigAlert" hidden>Для 1000+ пристроїв вартість підписки розраховується індивідуально. Зверніться до менеджера.</div>
+    <aside id="aside">
+      <div class="bill" id="bill" aria-live="polite">
+        <div class="ctx" id="ctx"></div>
+        <div class="alert" id="bigAlert" hidden>Для 1000+ пристроїв вартість підписки розраховується індивідуально.</div>
         <div class="big num" id="monthly">0 €</div>
-        <div class="per">на місяць, підписка</div>
-        <div id="lines"></div>
+        <div class="per">на місяць</div>
         <div class="term">
-          <label for="term">Термін договору, міс.</label>
-          <input type="number" id="term" min="1" max="60" value="12">
+          <span>Термін договору</span>
+          <div class="seg" role="group" aria-label="Термін договору" id="termSeg">
+            <button type="button" data-term="1">1</button>
+            <button type="button" data-term="6">6</button>
+            <button type="button" data-term="12">12</button>
+            <button type="button" data-term="24">24</button>
+          </div>
         </div>
         <div id="totals"></div>
-        <div class="actions">
-          <button class="btn" id="copyBtn" type="button">Скопіювати розрахунок</button>
-        </div>
+        <button class="btn" id="copyBtn" type="button">Скопіювати розрахунок</button>
+        <button class="btn ghost" id="resetAll" type="button">Почати заново</button>
         <div id="copyFallback"></div>
       </div>
       <div class="sla">
-        <b>Преміум техпідтримка включена в будь-який пакет:</b> реакція 2 год на критичні питання, 4 год на середні, 1 робочий день на загальні. Доступність 24/7/365, необмежена кількість звернень, виділений спеціаліст. Ціни без ПДВ, пропозиція дійсна 30 днів.
+        <b>У будь-який пакет входить преміум техпідтримка:</b> реакція від 2 годин, 24/7/365, необмежена кількість звернень і виділений спеціаліст. Ціни без ПДВ.
       </div>
+
+      <details class="mgr" id="dBreak">
+        <summary>Деталі розрахунку</summary>
+        <div class="inner" id="breakdown"></div>
+      </details>
+      <details class="mgr">
+        <summary>Ручне коригування</summary>
+        <div class="inner">
+          <p class="small" style="margin:0">Порожнє поле означає автоматичне значення за кількістю пристроїв.</p>
+          <div class="fields">
+            <label class="f">Коефіцієнт складності
+              <select id="kOverride">
+                <option value="">Авто</option>
+                <option value="1">× 1.0, легкий</option>
+                <option value="1.5">× 1.5, середній</option>
+                <option value="2">× 2.0, складний</option>
+              </select>
+            </label>
+            <label class="f">Години на місяць: супровід PROTECT
+              <input type="number" inputmode="numeric" id="h1Override" min="0" step="1" placeholder="авто">
+            </label>
+            <label class="f">Години на місяць: Inspect / Threat Hunting
+              <input type="number" inputmode="numeric" id="h2Override" min="0" step="1" placeholder="авто">
+            </label>
+            <label class="f">Свій термін, міс.
+              <input type="number" inputmode="numeric" id="termCustom" min="1" max="60" placeholder="напр. 18">
+            </label>
+          </div>
+          <button class="link" id="resetOverrides" type="button">Повернути автоматичні значення</button>
+        </div>
+      </details>
+      <details class="mgr">
+        <summary>Тарифи</summary>
+        <div class="inner">
+          <p class="small" style="margin:0">Змінені ставки зберігаються лише в цьому браузері.</p>
+          <div id="rateEditor"></div>
+          <button class="link" id="resetRates" type="button">Відновити ставки з пропозиції</button>
+        </div>
+      </details>
     </aside>
   </div>
+</div>
+
+<div class="mbar" id="mbar">
+  <div><span class="num" id="mbarSum">0 €</span><small id="mbarSub">на місяць</small></div>
+  <button type="button" id="mbarBtn">Розрахунок</button>
 </div>
 
 <script>
@@ -233,8 +304,8 @@ const DEFAULTS = {
   ],
   r1:20, r2:30, pro85:142, pro247:660,
   od:[
-    {name:"DFIR / Malware Analysis", desc:"Криміналістичний аналіз знімків систем, реверс-інжиніринг", rate:50},
-    {name:"Консультації з безпеки", desc:"Політики безпеки, навчання технічних фахівців", rate:25},
+    {name:"DFIR / Malware Analysis", desc:"Криміналістичний аналіз систем, реверс-інжиніринг", rate:50},
+    {name:"Консультації з безпеки", desc:"Політики безпеки, навчання фахівців", rate:25},
     {name:"Detections Analyze", desc:"Аналіз виявлень у ESET PROTECT & Inspect зі звітом", rate:35},
     {name:"Threat Hunting за запитом", desc:"Аналіз активності або розслідування інциденту", rate:45},
     {name:"Розгортання та оновлення ESET", desc:"Розгортання, оновлення, модернізація рішень", rate:30}
@@ -243,44 +314,56 @@ const DEFAULTS = {
 const PKGS = ["Базовий","Розширений","Проактивний"];
 const MATRIX = [
   ["Базовий реактивний захист",[1,1,1]],
-  ["DFIR базовий / аналіз підозрілих зразків",[1,1,1]],
+  ["DFIR базовий, аналіз підозрілих зразків",[1,1,1]],
   ["Супровід ESET PROTECT",[1,1,1]],
-  ["Питання, пов'язані з ESET Inspect",[0,1,1]],
-  ["Супроводження ESET Inspect: правила та виключення",[0,1,1]],
+  ["Консультації з ESET Inspect",[0,1,1]],
+  ["Налаштування ESET Inspect: правила та виключення",[0,1,1]],
   ["Регулярний Threat Hunting & Monitoring",[0,1,1]],
   ["Проактивний Threat Hunting & Monitoring",[0,0,1]]
 ];
 const KEY="adeon-bs-rates-v1";
+const clone=o=>JSON.parse(JSON.stringify(o));
 let R = clone(DEFAULTS);
 try{ const s = localStorage.getItem(KEY); if(s){ R = Object.assign(clone(DEFAULTS), JSON.parse(s)); } }catch(e){}
-const state = {pkg:1, mode:"85", odHours:R.od.map(()=>0)};
+const state = {pkg:1, mode:"85", term:12, odHours:R.od.map(()=>0)};
 
-function clone(o){return JSON.parse(JSON.stringify(o))}
 const $ = id=>document.getElementById(id);
 const fmt = new Intl.NumberFormat("uk-UA",{minimumFractionDigits:0,maximumFractionDigits:2});
 const eur = v=>fmt.format(v)+" €";
 const num = (v,d=0)=>{const n=parseFloat(String(v).replace(",","."));return isFinite(n)?n:d};
-function save(){try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}};
+const devWord=n=>{const a=n%10,b=n%100;return n+" "+(a===1&&b!==11?"пристрій":(a>=2&&a<=4&&(b<12||b>14)?"пристрої":"пристроїв"))};
+const months=n=>{const a=n%10,b=n%100;return n+" "+(a===1&&b!==11?"місяць":(a>=2&&a<=4&&(b<12||b>14)?"місяці":"місяців"))};
 
-/* build matrix */
-const tb = document.querySelector("#matrix tbody");
+/* device tiers */
+function buildTiers(){
+  const box=$("tiers");
+  const opts=R.tiers.map(t=>({label:t.label,val:t.to,from:t.from,to:t.to})).concat([{label:"1000+",val:1000,from:1000,to:Infinity}]);
+  box.innerHTML=opts.map((o,i)=>`<button type="button" class="tier" data-i="${i}"><b>${o.label}</b><span>пристроїв</span></button>`).join("");
+  box.querySelectorAll(".tier").forEach((b,i)=>b.addEventListener("click",()=>{$("devices").value=opts[i].val;render()}));
+  box._opts=opts;
+}
+$("devices").addEventListener("input",render);
+
+/* packages */
+const tb=document.querySelector("#matrix tbody");
 MATRIX.forEach(([n,flags])=>{
   const tr=document.createElement("tr");
-  tr.innerHTML=`<td>${n}</td>`+flags.map((f,i)=>`<td data-col="${i}" class="${f?'yes':'no'}">${f?'✓':'—'}</td>`).join("");
+  tr.innerHTML=`<td>${n}</td>`+flags.map((f,i)=>`<td data-col="${i}" class="${f?'yes':'no'}" aria-label="${f?'входить':'не входить'}">${f?'✓':'—'}</td>`).join("");
   tb.appendChild(tr);
 });
 document.querySelectorAll(".pkg-btn").forEach(b=>b.addEventListener("click",()=>{state.pkg=+b.dataset.pkg;render()}));
 document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{state.mode=b.dataset.mode;render()}));
+document.querySelectorAll("[data-term]").forEach(b=>b.addEventListener("click",()=>{state.term=+b.dataset.term;$("termCustom").value="";render()}));
 
 /* on-demand */
 function buildOD(){
   const box=$("od"); box.innerHTML="";
   R.od.forEach((s,i)=>{
-    box.insertAdjacentHTML("beforeend",`
+    box.insertAdjacentHTML("beforeend",`<div class="od-row">
       <div class="name">${s.name}<span>${s.desc}</span></div>
-      <div class="rate">${eur(s.rate)}/год</div>
-      <div class="step"><button type="button" data-d="-1" data-i="${i}" aria-label="Менше годин">−</button><input type="number" min="0" step="1" value="${state.odHours[i]||0}" data-i="${i}" aria-label="Години: ${s.name}"><button type="button" data-d="1" data-i="${i}" aria-label="Більше годин">+</button></div>
-      <div class="sum" id="ods${i}">—</div>`);
+      <div><div class="step"><button type="button" data-d="-1" data-i="${i}" aria-label="Менше годин">−</button><input type="number" inputmode="numeric" min="0" step="1" value="${state.odHours[i]||0}" data-i="${i}" aria-label="Години: ${s.name}"><button type="button" data-d="1" data-i="${i}" aria-label="Більше годин">+</button></div><div class="unit">годин</div></div>
+    </div>`);
   });
   box.querySelectorAll("button[data-d]").forEach(b=>b.addEventListener("click",()=>{
     const i=+b.dataset.i; state.odHours[i]=Math.max(0,(state.odHours[i]||0)+ +b.dataset.d);
@@ -291,89 +374,122 @@ function buildOD(){
 
 /* rate editor */
 function buildEditor(){
-  const t=R.tiers;
-  let h=`<div class="matrix-scroll"><table class="matrix" style="min-width:520px;margin-top:12px"><thead><tr><th style="text-align:left">Пристрої</th><th>Коефіцієнт</th><th>Год PROTECT</th><th>Год Inspect / TH</th></tr></thead><tbody>`;
-  t.forEach((x,i)=>{h+=`<tr><td>${x.label}</td>`+["k","h1","h2"].map(f=>`<td><input data-t="${i}" data-f="${f}" type="number" step="${f==='k'?'0.1':'1'}" value="${x[f]}" style="width:80px;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:center"></td>`).join("")+`</tr>`});
+  let h=`<div class="scroll"><table class="tbl" style="margin-top:12px"><thead><tr><th>Пристрої</th><th>Коеф.</th><th>Год PROTECT</th><th>Год Inspect</th></tr></thead><tbody>`;
+  R.tiers.forEach((x,i)=>{h+=`<tr><td>${x.label}</td>`+["k","h1","h2"].map(f=>`<td><input data-t="${i}" data-f="${f}" type="number" inputmode="decimal" step="${f==='k'?'0.1':'1'}" value="${x[f]}"></td>`).join("")+`</tr>`});
   h+=`</tbody></table></div><div class="fields">`;
   [["r1","Супровід PROTECT, €/год"],["r2","Inspect / Threat Hunting, €/год"],["pro85","Проактивний 8/5, €/міс"],["pro247","Проактивний 24/7, €/міс"]]
-    .forEach(([k,l])=>h+=`<label class="f">${l}<input type="number" data-r="${k}" value="${R[k]}" step="1"></label>`);
-  R.od.forEach((s,i)=>h+=`<label class="f">${s.name}, €/год<input type="number" data-o="${i}" value="${s.rate}" step="1"></label>`);
+    .forEach(([k,l])=>h+=`<label class="f">${l}<input type="number" inputmode="decimal" data-r="${k}" value="${R[k]}"></label>`);
+  R.od.forEach((s,i)=>h+=`<label class="f">${s.name}, €/год<input type="number" inputmode="decimal" data-o="${i}" value="${s.rate}"></label>`);
   h+=`</div>`;
   const ed=$("rateEditor"); ed.innerHTML=h;
   ed.querySelectorAll("input[data-t]").forEach(i=>i.addEventListener("input",()=>{R.tiers[+i.dataset.t][i.dataset.f]=num(i.value);save();render()}));
   ed.querySelectorAll("input[data-r]").forEach(i=>i.addEventListener("input",()=>{R[i.dataset.r]=num(i.value);save();render()}));
-  ed.querySelectorAll("input[data-o]").forEach(i=>i.addEventListener("input",()=>{R.od[+i.dataset.o].rate=num(i.value);save();buildODRates();render()}));
+  ed.querySelectorAll("input[data-o]").forEach(i=>i.addEventListener("input",()=>{R.od[+i.dataset.o].rate=num(i.value);save();render()}));
 }
-function buildODRates(){document.querySelectorAll("#od .rate").forEach((el,i)=>el.textContent=eur(R.od[i].rate)+"/год")}
-$("resetRates").addEventListener("click",()=>{R=clone(DEFAULTS);try{localStorage.removeItem(KEY)}catch(e){}buildEditor();buildOD();render()});
+$("resetRates").addEventListener("click",()=>{R=clone(DEFAULTS);try{localStorage.removeItem(KEY)}catch(e){}buildEditor();render()});
 
-/* devices */
-$("devices").addEventListener("input",()=>{$("devRange").value=Math.min(1200,num($("devices").value,1));render()});
-$("devRange").addEventListener("input",()=>{$("devices").value=$("devRange").value;render()});
-["kOverride","h1Override","h2Override","term"].forEach(id=>$(id).addEventListener("input",render));
-$("resetOverrides").addEventListener("click",()=>{$("kOverride").value="";$("h1Override").value="";$("h2Override").value="";render()});
+["kOverride","h1Override","h2Override","termCustom"].forEach(id=>$(id).addEventListener("input",render));
+$("resetOverrides").addEventListener("click",()=>{["kOverride","h1Override","h2Override","termCustom"].forEach(id=>$(id).value="");render()});
 
 function calc(){
   const d=Math.max(1,Math.floor(num($("devices").value,1)));
   const big=d>=1000;
   const tier=big?null:R.tiers.find(t=>d>=t.from&&d<=t.to);
   const kO=$("kOverride").value, h1O=$("h1Override").value, h2O=$("h2Override").value;
-  const k = kO!==""?num(kO):(tier?tier.k:0);
-  const h1 = h1O!==""?num(h1O):(tier?tier.h1:0);
-  const h2 = h2O!==""?num(h2O):(tier?tier.h2:0);
+  const k=kO!==""?num(kO):(tier?tier.k:0);
+  const h1=h1O!==""?num(h1O):(tier?tier.h1:0);
+  const h2=h2O!==""?num(h2O):(tier?tier.h2:0);
   const inc=[true,state.pkg>=1,state.pkg>=2];
-  const proPrice = state.mode==="247"?R.pro247:R.pro85;
+  const pro=state.mode==="247"?R.pro247:R.pro85;
   const lines=[
-    {n:`Супровід PROTECT: ${h1} год × ${R.r1} € × ${k}`, v:big?0:h1*R.r1*k, on:inc[0]},
-    {n:`Inspect / Threat Hunting: ${h2} год × ${R.r2} € × ${k}`, v:big?0:h2*R.r2*k, on:inc[1]},
-    {n:`Проактивний TH ${state.mode==="247"?"24/7":"8/5"}: ${proPrice} € × ${k}`, v:big?0:proPrice*k, on:inc[2]}
+    {n:"Супровід ESET PROTECT",f:`${h1} год × ${R.r1} € × ${k}`,v:big?0:h1*R.r1*k,on:inc[0]},
+    {n:"Inspect / Threat Hunting",f:`${h2} год × ${R.r2} € × ${k}`,v:big?0:h2*R.r2*k,on:inc[1]},
+    {n:`Проактивний TH ${state.mode==="247"?"24/7":"8/5"}`,f:`${pro} € × ${k}`,v:big?0:pro*k,on:inc[2]}
   ];
   const monthly=lines.reduce((s,l)=>s+(l.on?l.v:0),0);
-  const od=R.od.map((s,i)=>({n:s.name,h:state.odHours[i]||0,v:(state.odHours[i]||0)*s.rate}));
+  const od=R.od.map((s,i)=>({n:s.name,h:state.odHours[i]||0,r:s.rate,v:(state.odHours[i]||0)*s.rate}));
   const odSum=od.reduce((s,x)=>s+x.v,0);
-  const term=Math.max(1,Math.floor(num($("term").value,12)));
-  return {d,big,tier,k,h1,h2,lines,monthly,od,odSum,term};
+  const tc=$("termCustom").value;
+  const term=tc!==""?Math.max(1,Math.floor(num(tc,12))):state.term;
+  const range=big?"1000+":(tier?tier.label:d);
+  return {d,big,tier,range,k,h1,h2,lines,monthly,od,odSum,term,pkgName:PKGS[state.pkg]+(state.pkg===2?` ${state.mode==="247"?"24/7":"8/5"}`:"")};
 }
 
 function render(){
   const c=calc();
-  /* scale */
-  $("scale").innerHTML=R.tiers.map(t=>`<div class="tier ${c.tier===t?'on':''}"><b>${t.label}</b>× ${t.k} · ${t.h1}/${t.h2} год</div>`).join("")+
-    `<div class="tier ${c.big?'on':''}"><b>1000+</b>індивідуально</div>`;
-  /* matrix */
-  document.querySelectorAll("#matrix [data-col]").forEach(el=>el.classList.toggle("col-on",+el.dataset.col===state.pkg));
+  /* tiers */
+  const opts=$("tiers")._opts;
+  $("tiers").querySelectorAll(".tier").forEach((b,i)=>b.setAttribute("aria-pressed",c.d>=opts[i].from&&c.d<=opts[i].to));
+  /* packages */
   document.querySelectorAll(".pkg-btn").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.pkg===state.pkg));
+  document.querySelectorAll("#matrix [data-col]").forEach(el=>el.classList.toggle("col-on",+el.dataset.col===state.pkg));
   document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===state.mode));
-  $("modeBox").classList.toggle("disabled",state.pkg!==2);
-  /* od sums */
-  c.od.forEach((x,i)=>{const el=$("ods"+i);if(el)el.textContent=x.h?eur(x.v):"—"});
+  $("modeBox").hidden=state.pkg!==2;
+  const custom=$("termCustom").value!=="";
+  document.querySelectorAll("[data-term]").forEach(b=>b.setAttribute("aria-pressed",!custom&&+b.dataset.term===c.term));
   /* bill */
+  $("ctx").textContent=`${c.pkgName}, ${devWord(c.d)}`;
   $("bigAlert").hidden=!c.big;
-  $("monthly").textContent=c.big?"Індивід.":eur(c.monthly);
-  $("lines").innerHTML=c.lines.map(l=>`<div class="line ${l.on&&!c.big?'':'off'}"><span>${l.n}</span><span>${l.on&&!c.big?eur(l.v):'—'}</span></div>`).join("");
+  $("monthly").textContent=c.big?"Індивідуально":eur(c.monthly);
   const sub=c.monthly*c.term;
-  $("totals").innerHTML=
-    `<div class="line"><span>Підписка за ${c.term} міс.</span><span>${c.big?'—':eur(sub)}</span></div>`+
-    `<div class="line"><span>Послуги за вимогою</span><span>${c.odSum?eur(c.odSum):'—'}</span></div>`+
-    `<div class="line total"><span>Разом за ${c.term} міс.</span><span>${c.big?(c.odSum?eur(c.odSum)+' + підписка':'—'):eur(sub+c.odSum)}</span></div>`;
+  let t=`<div class="line"><span>Підписка за ${months(c.term)}</span><span>${c.big?"—":eur(sub)}</span></div>`;
+  if(c.odSum) t+=`<div class="line"><span>Разові послуги</span><span>${eur(c.odSum)}</span></div>`;
+  if(!c.big) t+=`<div class="line total"><span>Разом</span><span>${eur(sub+c.odSum)}</span></div>`;
+  $("totals").innerHTML=t;
+  /* manager breakdown */
+  let b=`<table class="bd"><tbody>`;
+  b+=`<tr class="muted"><td>Пристроїв: ${c.d}, коефіцієнт × ${c.k}</td><td></td></tr>`;
+  c.lines.forEach(l=>{if(l.on&&!c.big)b+=`<tr><td>${l.n}<br><span class="small">${l.f}</span></td><td>${eur(l.v)}</td></tr>`});
+  if(!c.big) b+=`<tr><td><b>Підписка на місяць</b></td><td><b>${eur(c.monthly)}</b></td></tr>`;
+  c.od.filter(x=>x.h).forEach(x=>b+=`<tr><td>${x.n}<br><span class="small">${x.h} год × ${x.r} €</span></td><td>${eur(x.v)}</td></tr>`);
+  if(c.odSum) b+=`<tr><td><b>Разові послуги</b></td><td><b>${eur(c.odSum)}</b></td></tr>`;
+  b+=`</tbody></table>`;
+  $("breakdown").innerHTML=b;
+  /* mobile bar */
+  $("mbarSum").textContent=c.big?"Індивідуально":eur(c.monthly);
+  $("mbarSub").textContent=c.big?c.pkgName:`на місяць · ${c.pkgName}`;
   window.__calc=c;
+}
+
+/* mobile bar: hide when the bill is on screen */
+$("mbarBtn").addEventListener("click",()=>$("bill").scrollIntoView({behavior:"smooth",block:"start"}));
+if("IntersectionObserver" in window){
+  new IntersectionObserver(es=>es.forEach(e=>$("mbar").classList.toggle("away",e.isIntersecting)),{threshold:.25}).observe($("bill"));
 }
 
 $("copyBtn").addEventListener("click",async()=>{
   const c=window.__calc;
-  let t=`Розрахунок ADEON BS\nПристроїв: ${c.d}${c.tier?` (діапазон ${c.tier.label}, коефіцієнт × ${c.k})`:''}\nПакет: ${PKGS[state.pkg]}${state.pkg===2?` (${state.mode==="247"?"24/7":"8/5"})`:''}\n\n`;
-  if(c.big) t+="Підписка: індивідуальний розрахунок (1000+ пристроїв)\n";
-  else { c.lines.filter(l=>l.on).forEach(l=>t+=`${l.n} = ${eur(l.v)}\n`); t+=`Підписка на місяць: ${eur(c.monthly)}\nПідписка за ${c.term} міс.: ${eur(c.monthly*c.term)}\n`; }
+  let t=`Розрахунок вартості послуг ADEON BS\n\nПакет: ${c.pkgName}\nКількість пристроїв: ${c.d}\n`;
+  if(c.big) t+=`Підписка: індивідуальний розрахунок\n`;
+  else t+=`Вартість підписки: ${eur(c.monthly)} на місяць\nЗа ${months(c.term)}: ${eur(c.monthly*c.term)}\n`;
   const od=c.od.filter(x=>x.h);
-  if(od.length){t+=`\nПослуги за вимогою:\n`;od.forEach(x=>t+=`${x.n}: ${x.h} год = ${eur(x.v)}\n`);t+=`Разом за вимогою: ${eur(c.odSum)}\n`}
-  if(!c.big) t+=`\nРазом за ${c.term} міс.: ${eur(c.monthly*c.term+c.odSum)}\n`;
-  t+=`Ціни без ПДВ. Пропозиція дійсна 30 календарних днів.`;
+  if(od.length){t+=`\nРазові послуги:\n`;od.forEach(x=>t+=`• ${x.n}, ${x.h} год\n`);t+=`Разом за разові послуги: ${eur(c.odSum)}\n`}
+  if(!c.big) t+=`\nЗагальна вартість: ${eur(c.monthly*c.term+c.odSum)}\n`;
+  t+=`\nПреміум техпідтримка 24/7 включена. Ціни без ПДВ. Пропозиція дійсна 30 календарних днів.`;
   const btn=$("copyBtn");
   try{await navigator.clipboard.writeText(t);btn.textContent="Скопійовано";setTimeout(()=>btn.textContent="Скопіювати розрахунок",1800)}
   catch(e){$("copyFallback").innerHTML=`<textarea class="copy" readonly></textarea>`;const ta=document.querySelector("textarea.copy");ta.value=t;ta.focus();ta.select();}
 });
 
-buildOD(); buildEditor(); render();
+let resetArmed=null;
+$("resetAll").addEventListener("click",()=>{
+  const btn=$("resetAll");
+  if(!resetArmed){
+    btn.textContent="Натисніть ще раз, щоб скинути";
+    resetArmed=setTimeout(()=>{resetArmed=null;btn.textContent="Почати заново"},3000);
+    return;
+  }
+  clearTimeout(resetArmed); resetArmed=null; btn.textContent="Почати заново";
+  state.pkg=1; state.mode="85"; state.term=12; state.odHours=R.od.map(()=>0);
+  $("devices").value=120;
+  ["kOverride","h1Override","h2Override","termCustom"].forEach(id=>$(id).value="");
+  document.querySelectorAll("details.mgr").forEach(d=>d.open=false);
+  $("copyFallback").innerHTML="";
+  buildOD(); render();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+buildTiers(); buildOD(); buildEditor(); render();
 })();
 </script>
 </body>
