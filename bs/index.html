@@ -11,7 +11,7 @@
 :root{
   --bg:#EEF2F5; --card:#FFFFFF; --ink:#142334; --muted:#5A6B7B; --line:#D3DCE3;
   --accent:#0E7C7B; --accent-soft:#DCEFEE; --accent-ink:#FFFFFF; --warn:#B4531A; --warn-soft:#FBEADF; --fte-bg:#FFF6E3; --fte-line:#E3A53B; --fte-ink:#7A4B06; --fte-tile:#FFFFFF;
-  --off:#A7B3BE; --bill:#142334; --bill-ink:#FFFFFF;
+  --off:#A7B3BE; --bill:#142334; --bill-ink:#FFFFFF; --bill-btn:#FFFFFF; --bill-btn-ink:#142334;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -19,13 +19,13 @@
   :root:not([data-theme="light"]){
     --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
     --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --fte-bg:#2C2312; --fte-line:#B9852E; --fte-ink:#F2C470; --fte-tile:#1F1A10; --off:#566676;
-    --bill:#E6EDF3; --bill-ink:#0F1A26;
+    --bill:#1F3B47; --bill-ink:#DCE6EC; --bill-btn:#3CB7B3; --bill-btn-ink:#0F1A26;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
   --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --fte-bg:#2C2312; --fte-line:#B9852E; --fte-ink:#F2C470; --fte-tile:#1F1A10; --off:#566676;
-  --bill:#E6EDF3; --bill-ink:#0F1A26;
+  --bill:#1F3B47; --bill-ink:#DCE6EC; --bill-btn:#3CB7B3; --bill-btn-ink:#0F1A26;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
 *,*::before,*::after{box-sizing:border-box}
@@ -74,15 +74,18 @@ table.matrix{width:100%;border-collapse:collapse}
 
 /* on-demand */
 .od{display:flex;flex-direction:column}
-.od-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.od-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line)}
+.odc{display:flex;align-items:center;flex:none}
 .od-row:first-child{border-top:0;padding-top:0}
 .od-row .name{font-weight:500;font-size:.92rem;line-height:1.3}
+.od-row .name .tip{vertical-align:-2px;margin-left:5px}
 .od-row .name span{display:block;font-weight:400;font-size:.78rem;color:var(--muted);margin-top:2px}
 .step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
-.step button{width:44px;height:44px;border:0;background:var(--bg);color:var(--ink);font-size:1.2rem;cursor:pointer}
-.step input{width:52px;height:44px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:600 16px "IBM Plex Sans",sans-serif;background:var(--card);color:var(--ink);-moz-appearance:textfield}
+.step button{width:36px;height:36px;border:0;background:var(--bg);color:var(--ink);font-size:1.2rem;cursor:pointer}
+.step input{width:48px;height:36px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:600 16px "IBM Plex Sans",sans-serif;background:var(--card);color:var(--ink);-moz-appearance:textfield}
 .step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.unit{font-size:.8rem;color:var(--muted);text-align:center;margin-top:2px}
+.unit{font-size:.8rem;color:var(--muted);margin-left:6px}
+@media (pointer:coarse){.step button{width:42px;height:42px}.step input{height:42px}}
 
 /* manager details */
 details.mgr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
@@ -117,10 +120,10 @@ aside{position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
 .term{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid rgba(127,140,155,.35);font-size:.9rem}
 .term .seg{border-color:rgba(127,140,155,.5)}
 .term .seg button{background:transparent;color:inherit;padding:8px 12px;min-height:40px}
-.term .seg button[aria-pressed=true]{background:var(--bill-ink);color:var(--bill)}
+.term .seg button[aria-pressed=true]{background:var(--bill-btn);color:var(--bill-btn-ink)}
 .alert{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.9rem;font-weight:500}
 .alert[hidden]{display:none}
-.btn{width:100%;min-height:46px;margin-top:16px;border-radius:10px;border:0;background:var(--bill-ink);color:var(--bill);font:600 .9rem "IBM Plex Sans",sans-serif;cursor:pointer}
+.btn{width:100%;min-height:46px;margin-top:16px;border-radius:10px;border:0;background:var(--bill-btn);color:var(--bill-btn-ink);font:600 .9rem "IBM Plex Sans",sans-serif;cursor:pointer}
 .btn.ghost{margin-top:8px;background:transparent;color:inherit;border:1px solid rgba(127,140,155,.55);font-weight:500}
 .sla{margin:14px 0 12px;font-size:.84rem;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
 .sla b{color:var(--ink);font-weight:600}
@@ -128,7 +131,7 @@ textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14p
 
 .cur{display:flex;width:100%;margin-bottom:14px;border-color:rgba(127,140,155,.5)}
 .cur button{flex:1;background:transparent;color:inherit;min-height:40px;padding:6px 8px;font-size:.84rem}
-.cur button[aria-pressed=true]{background:var(--bill-ink);color:var(--bill)}
+.cur button[aria-pressed=true]{background:var(--bill-btn);color:var(--bill-btn-ink)}
 .client{display:flex;flex-direction:column;gap:4px;margin-top:16px;font-size:.82rem;opacity:.9}
 .client input{min-height:44px;width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(127,140,155,.55);background:transparent;color:inherit;font:500 16px "IBM Plex Sans",sans-serif}
 .client input::placeholder{color:inherit;opacity:.5}
@@ -143,7 +146,7 @@ textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14p
 .term{flex-wrap:wrap}
 
 /* FTE block (managers only) */
-details.fte{margin-top:12px;background:var(--fte-bg);border:1.5px solid var(--fte-line);border-radius:14px}
+details.fte{margin:12px 0;background:var(--fte-bg);border:1.5px solid var(--fte-line);border-radius:14px}
 details.fte>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;min-height:48px;font-weight:600;color:var(--fte-ink)}
 details.fte>summary::-webkit-details-marker{display:none}
 details.fte>summary::after{content:"+";font-size:1.3rem}
@@ -180,6 +183,13 @@ details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity
 @media (max-width:360px){.tiles{grid-template-columns:1fr}.tile.wide{grid-column:auto}.mat button{min-height:68px;font-size:.72rem}}
 @media print{details.fte{display:none}}
 
+/* tooltips */
+.tip{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;vertical-align:-3px;border-radius:50%;border:1px solid var(--muted);background:transparent;color:var(--muted);font:600 11px/1 "IBM Plex Sans",sans-serif;cursor:pointer;padding:0;position:relative;flex:none}
+.tip::after{content:"";position:absolute;inset:-12px}
+.tip:hover,.tip[aria-expanded=true]{border-color:var(--accent);color:var(--accent)}
+#tipPop{position:fixed;z-index:30;max-width:min(300px,calc(100vw - 24px));background:var(--ink);color:var(--card);font-size:.84rem;line-height:1.4;padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .12s}
+#tipPop.on{opacity:1}
+
 /* mobile bottom bar */
 .mbar{display:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -209,7 +219,7 @@ details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity
   .tier span{font-size:.68rem}
   .pkgs{gap:6px}
   .pkg-btn{font-size:.7rem;padding:8px 2px;min-height:44px}
-  .od-row{gap:10px;padding:10px 0}
+  .od-row{gap:10px;padding:6px 0}
   .step button{width:40px}
   .step input{width:44px}
   /* show only the selected package column */
@@ -229,7 +239,6 @@ details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity
   .pkg-btn{font-size:.8rem}
   .od-row{flex-direction:column;align-items:stretch;gap:8px}
   .od-row .step{align-self:flex-start}
-  .od-row .unit{display:none}
   .exact input{width:100%}
   .exact{flex-direction:column;align-items:stretch;gap:6px}
   .bill .big{font-size:1.45rem}
@@ -339,7 +348,7 @@ details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity
         <div id="copyFallback"></div>
       </div>
       <details class="fte" id="fteBox">
-        <summary><span>Для менеджера: навантаження і повний звіт<small>Клієнтські PDF і копія цього не містять</small></span></summary>
+        <summary><span>Навантаження на команду<small>Клієнтські PDF і копія цього не містять</small></span></summary>
         <div class="inner">
           <p class="q" id="fteMat"></p>
           <div class="tiles">
@@ -362,9 +371,7 @@ details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity
           </details>
         </div>
       </details>
-      <div class="sla">
-        <b>У будь-який пакет входить преміум техпідтримка:</b> реакція від 2 годин, 24/7/365, необмежена кількість звернень і виділений спеціаліст. <span id="slaVat">Ціни без ПДВ.</span>
-      </div>
+      
 
       <details class="mgr" id="dBreak">
         <summary>Деталі розрахунку</summary>
@@ -475,13 +482,13 @@ const DEFAULTS = {
 const PKGS = ["Базовий","Розширений","Проактивний"];
 const MATN = {start:"Початковий",dev:"Розвивається",zen:"Просвітлений"};
 const MATRIX = [
-  ["Базовий реактивний захист",[1,1,1]],
-  ["DFIR базовий, аналіз підозрілих зразків",[1,1,1]],
-  ["Супровід ESET PROTECT",[1,1,1]],
-  ["Консультації з ESET Inspect",[0,1,1]],
-  ["Налаштування ESET Inspect: правила та виключення",[0,1,1]],
-  ["Регулярний Threat Hunting & Monitoring",[0,1,1]],
-  ["Проактивний Threat Hunting & Monitoring",[0,0,1]]
+  ["Базовий реактивний захист",[1,1,1],"Регулярний аналіз спрацювань рішень ESET PROTECT (Inspect)"],
+  ["Базовий DFIR, аналіз підозрілих зразків",[1,1,1],"Поглиблене дослідження зразків під час опрацювання подій"],
+  ["Супровід ESET PROTECT",[1,1,1],"Супроводження налаштування та коригування політик"],
+  ["Супровід ESET Inspect",[0,1,1],"Супроводження налаштування та консультації фахівців клієнта"],
+  ["Оптимізація ESET Inspect",[0,1,1],"Адаптація під специфіку інфраструктури клієнта, коригування правил і виключень"],
+  ["Регулярний Threat Hunting",[0,1,1],"Розширений Threat Hunting у ESET Inspect"],
+  ["Проактивний Threat Hunting & Monitoring",[0,0,1],"Послуга постійного моніторингу та реагування"]
 ];
 const KEY="adeon-bs-rates-v1";
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -526,9 +533,9 @@ $("devices").addEventListener("input",render);
 
 /* packages */
 const tb=document.querySelector("#matrix tbody");
-MATRIX.forEach(([n,flags])=>{
+MATRIX.forEach(([n,flags,tip])=>{
   const tr=document.createElement("tr");
-  tr.innerHTML=`<td>${n}</td>`+flags.map((f,i)=>`<td data-col="${i}" class="${f?'yes':'no'}" aria-label="${f?'входить':'не входить'}">${f?'✓':'—'}</td>`).join("");
+  tr.innerHTML=`<td>${n}<button type="button" class="tip" data-tip="${tip}" aria-label="Що це: ${n}">i</button></td>`+flags.map((f,i)=>`<td data-col="${i}" class="${f?'yes':'no'}" aria-label="${f?'входить':'не входить'}">${f?'✓':'—'}</td>`).join("");
   tb.appendChild(tr);
 });
 document.querySelectorAll(".pkg-btn").forEach(b=>b.addEventListener("click",()=>{state.pkg=+b.dataset.pkg;render()}));
@@ -540,8 +547,8 @@ function buildOD(){
   const box=$("od"); box.innerHTML="";
   R.od.forEach((s,i)=>{
     box.insertAdjacentHTML("beforeend",`<div class="od-row">
-      <div class="name">${s.name}<span>${s.desc}</span></div>
-      <div><div class="step"><button type="button" data-d="-1" data-i="${i}" aria-label="Менше годин">−</button><input type="number" inputmode="numeric" min="0" step="1" value="${state.odHours[i]||0}" data-i="${i}" aria-label="Години: ${s.name}"><button type="button" data-d="1" data-i="${i}" aria-label="Більше годин">+</button></div><div class="unit">годин</div></div>
+      <div class="name">${s.name}<button type="button" class="tip" data-tip="${s.desc}" aria-label="Що це: ${s.name}">i</button></div>
+      <div class="odc"><div class="step"><button type="button" data-d="-1" data-i="${i}" aria-label="Менше годин">−</button><input type="number" inputmode="numeric" min="0" step="1" value="${state.odHours[i]||0}" data-i="${i}" aria-label="Години: ${s.name}"><button type="button" data-d="1" data-i="${i}" aria-label="Більше годин">+</button></div><span class="unit">год</span></div>
     </div>`);
   });
   box.querySelectorAll("button[data-d]").forEach(b=>b.addEventListener("click",()=>{
@@ -619,7 +626,6 @@ function render(){
   $("monthly").textContent=c.big?"Індивідуально":money(c.monthly);
   $("per").textContent=state.cur==="uah"?"на місяць, з ПДВ":"на місяць, без ПДВ";
   document.querySelectorAll("[data-cur]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.cur===state.cur));
-  $("slaVat").textContent=vatNote();
   const sub=c.monthly*c.term;
   let t=`<div class="line"><span>Підписка за ${months(c.term)}</span><span>${c.big?"—":money(sub)}</span></div>`;
   if(c.odSum) t+=`<div class="line"><span>Разові послуги</span><span>${money(c.odSum)}</span></div>`;
@@ -1128,6 +1134,30 @@ $("mgrCopy").addEventListener("click",async()=>{
   try{await navigator.clipboard.writeText(t);btn.textContent="Скопійовано";setTimeout(()=>btn.textContent="Скопіювати звіт",1800)}
   catch(e){$("mgrFallback").innerHTML=`<textarea class="copy" readonly></textarea>`;const ta=document.querySelector("#mgrFallback textarea");ta.value=t;ta.focus();ta.select();}
 });
+
+/* tooltips: hover on desktop, tap on touch, Esc / outside tap closes */
+(function(){
+  const pop=document.createElement("div"); pop.id="tipPop"; pop.setAttribute("role","tooltip"); document.body.appendChild(pop);
+  let cur=null, lastShow=0;
+  function show(b){
+    lastShow=Date.now();
+    if(cur&&cur!==b) cur.setAttribute("aria-expanded","false");
+    cur=b; b.setAttribute("aria-expanded","true");
+    pop.textContent=b.dataset.tip; pop.classList.add("on");
+    const r=b.getBoundingClientRect(), pw=pop.offsetWidth, ph=pop.offsetHeight;
+    let x=Math.min(Math.max(12,r.left+r.width/2-pw/2),innerWidth-pw-12);
+    let y=r.top-ph-8; if(y<12) y=r.bottom+8;
+    pop.style.left=x+"px"; pop.style.top=y+"px";
+  }
+  function hide(){ if(cur) cur.setAttribute("aria-expanded","false"); cur=null; pop.classList.remove("on"); }
+  document.addEventListener("click",e=>{const b=e.target.closest(".tip"); if(b){e.preventDefault(); (cur===b&&Date.now()-lastShow>350)?hide():show(b)} else hide()});
+  document.addEventListener("mouseover",e=>{const b=e.target.closest&&e.target.closest(".tip"); if(b&&matchMedia("(hover:hover)").matches) show(b)});
+  document.addEventListener("mouseout",e=>{const b=e.target.closest&&e.target.closest(".tip"); if(b&&matchMedia("(hover:hover)").matches) hide()});
+  document.addEventListener("focusin",e=>{if(e.target.classList&&e.target.classList.contains("tip")) show(e.target)});
+  document.addEventListener("focusout",e=>{if(e.target.classList&&e.target.classList.contains("tip")) hide()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape") hide()});
+  addEventListener("scroll",hide,{passive:true}); addEventListener("resize",hide);
+})();
 
 buildTiers(); buildOD(); buildEditor(); render();
 autoFx();
