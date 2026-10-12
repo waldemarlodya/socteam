@@ -10,7 +10,7 @@
 <style>
 :root{
   --bg:#EEF2F5; --card:#FFFFFF; --ink:#142334; --muted:#5A6B7B; --line:#D3DCE3;
-  --accent:#0E7C7B; --accent-soft:#DCEFEE; --accent-ink:#FFFFFF; --warn:#B4531A; --warn-soft:#FBEADF;
+  --accent:#0E7C7B; --accent-soft:#DCEFEE; --accent-ink:#FFFFFF; --warn:#B4531A; --warn-soft:#FBEADF; --fte-bg:#FFF6E3; --fte-line:#E3A53B; --fte-ink:#7A4B06; --fte-tile:#FFFFFF;
   --off:#A7B3BE; --bill:#142334; --bill-ink:#FFFFFF;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
@@ -18,13 +18,13 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
-    --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --off:#566676;
+    --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --fte-bg:#2C2312; --fte-line:#B9852E; --fte-ink:#F2C470; --fte-tile:#1F1A10; --off:#566676;
     --bill:#E6EDF3; --bill-ink:#0F1A26;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1A26; --card:#172534; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3B4D;
-  --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --off:#566676;
+  --accent:#3CB7B3; --accent-soft:#163B3E; --accent-ink:#0F1A26; --warn:#F09A62; --warn-soft:#3A2618; --fte-bg:#2C2312; --fte-line:#B9852E; --fte-ink:#F2C470; --fte-tile:#1F1A10; --off:#566676;
   --bill:#E6EDF3; --bill-ink:#0F1A26;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
@@ -142,6 +142,44 @@ textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14p
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .term{flex-wrap:wrap}
 
+/* FTE block (managers only) */
+details.fte{margin-top:12px;background:var(--fte-bg);border:1.5px solid var(--fte-line);border-radius:14px}
+details.fte>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;min-height:48px;font-weight:600;color:var(--fte-ink)}
+details.fte>summary::-webkit-details-marker{display:none}
+details.fte>summary::after{content:"+";font-size:1.3rem}
+details.fte[open]>summary::after{content:"−"}
+details.fte>summary small{display:block;font-weight:400;font-size:.76rem;opacity:.85}
+.fte .inner{padding:0 18px 18px}
+.fte .q{font-size:.84rem;color:var(--fte-ink);margin:0 0 8px;font-weight:500}
+.mat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.mat button{min-height:84px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;padding:10px 6px;font:500 .86rem "IBM Plex Sans",sans-serif;line-height:1.2}
+.mat button:hover{border-color:var(--accent)}
+.mat button .e{display:block;font-size:1.6rem;line-height:1;margin-bottom:6px}
+.mat button small{display:block;color:var(--muted);font-size:.7rem;margin-top:2px}
+.mat button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.mat button[aria-pressed=true] small{color:inherit;opacity:.85}
+.mat{margin-bottom:0}
+.fte .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.fte .btns button{min-height:44px;border-radius:10px;border:1px solid var(--fte-line);background:var(--fte-line);color:#1d1404;font:600 .86rem "IBM Plex Sans",sans-serif;cursor:pointer}
+.fte .btns button.sec{background:transparent;color:var(--fte-ink)}
+.fte .status{color:var(--fte-ink)}
+@media (max-width:360px){.fte .btns{grid-template-columns:1fr}}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:var(--fte-tile);border-radius:10px;padding:10px 12px;border:1px solid rgba(227,165,59,.35)}
+.tile.wide{grid-column:span 2}
+.tile .k{font-size:.74rem;color:var(--muted)}
+.tile .v{font:700 1.15rem "Unbounded",sans-serif;color:var(--ink);margin-top:2px}
+.tile .s{font-size:.76rem;color:var(--muted);margin-top:2px}
+.fte .flag{margin-top:10px;font-size:.8rem;color:var(--fte-ink)}
+.fte .flag:empty{display:none}
+.fte .bar{height:6px;border-radius:3px;background:rgba(127,140,155,.25);overflow:hidden;margin-top:6px}
+.fte .bar i{display:block;height:100%;background:var(--fte-line)}
+.fte details.norms{margin-top:12px;border-top:1px dashed var(--fte-line);padding-top:10px}
+.fte details.norms summary{cursor:pointer;font-size:.84rem;color:var(--fte-ink);min-height:36px;display:flex;align-items:center}
+.fte .fields{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+@media (max-width:360px){.tiles{grid-template-columns:1fr}.tile.wide{grid-column:auto}.mat button{min-height:68px;font-size:.72rem}}
+@media print{details.fte{display:none}}
+
 /* mobile bottom bar */
 .mbar{display:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -217,11 +255,21 @@ textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14p
 <div class="wrap">
   <header>
     <h1>Калькулятор послуг кіберзахисту ADEON BS</h1>
-    <p>Оберіть кількість пристроїв і пакет підписки. Разові послуги можна додати окремо.</p>
+    <p>Оберіть стан інфраструктури, кількість пристроїв і пакет підписки. Разові послуги можна додати окремо.</p>
   </header>
 
   <div class="grid">
     <main>
+      <section aria-labelledby="h-mat">
+        <h2 id="h-mat">Стан інфраструктури</h2>
+        <p class="hint">Від нього залежить обсяг планових сесій і вартість проактивного моніторингу.</p>
+        <div class="mat" role="group" aria-label="Стан інфраструктури">
+          <button type="button" data-mat="start"><span class="e">🔥</span>Початковий<small>треба навести лад</small></button>
+          <button type="button" data-mat="dev"><span class="e">🛠️</span>Розвивається<small>базово налаштовано</small></button>
+          <button type="button" data-mat="zen"><span class="e">🧘</span>Просвітлений<small>процеси відлагоджені</small></button>
+        </div>
+      </section>
+
       <section aria-labelledby="h-dev">
         <h2 id="h-dev">Кількість пристроїв</h2>
         <p class="hint">Від неї залежить обсяг робіт і вартість підписки.</p>
@@ -290,6 +338,30 @@ textarea.copy{width:100%;height:170px;margin-top:10px;border-radius:8px;font:14p
         <button class="btn ghost" id="resetAll" type="button">Почати заново</button>
         <div id="copyFallback"></div>
       </div>
+      <details class="fte" id="fteBox">
+        <summary><span>Для менеджера: навантаження і повний звіт<small>Клієнтські PDF і копія цього не містять</small></span></summary>
+        <div class="inner">
+          <p class="q" id="fteMat"></p>
+          <div class="tiles">
+            <div class="tile"><div class="k">Інциденти та розслідування</div><div class="v" id="fteMonth">—</div><div class="s" id="fteMonthH"></div></div>
+            <div class="tile"><div class="k">Планові сесії</div><div class="v" id="fteSess">—</div><div class="s" id="fteSessS"></div></div>
+            <div class="tile wide"><div class="k">Разові послуги</div><div class="v" id="fteOd">—</div><div class="s">людино-годин, разово</div></div>
+            <div class="tile wide"><div class="k" id="fteTermK">За весь термін</div><div class="v" id="fteTerm">—</div><div class="s" id="fteTermS"></div></div>
+          </div>
+          <div class="flag" id="fteFlag"></div>
+          <div class="btns">
+            <button type="button" id="mgrPdf">PDF для керівника</button>
+            <button type="button" class="sec" id="mgrCopy">Скопіювати звіт</button>
+          </div>
+          <div class="status" id="mgrStatus" role="status"></div>
+          <div id="mgrFallback"></div>
+          <details class="norms">
+            <summary>Нормативи FTE</summary>
+            <div class="fields" id="fteNorms"></div>
+            <button class="link" id="fteNormsReset" type="button">Відновити нормативи</button>
+          </details>
+        </div>
+      </details>
       <div class="sla">
         <b>У будь-який пакет входить преміум техпідтримка:</b> реакція від 2 годин, 24/7/365, необмежена кількість звернень і виділений спеціаліст. <span id="slaVat">Ціни без ПДВ.</span>
       </div>
@@ -390,6 +462,8 @@ const DEFAULTS = {
   ],
   r1:20, r2:30, pro85:142, pro247:660,
   vat:20,
+  fte:{t:[0.25,0.5,1,1.5],big:2,step:0.5,hrs:160,mat:{start:1.3,dev:1,zen:0.8}},
+  matH:{start:1.5,dev:1,zen:0.75}, matP:{start:1.25,dev:1,zen:0.85},
   od:[
     {name:"DFIR / Malware Analysis", desc:"Криміналістичний аналіз систем, реверс-інжиніринг", rate:50},
     {name:"Консультації з безпеки", desc:"Політики безпеки, навчання фахівців", rate:25},
@@ -399,6 +473,7 @@ const DEFAULTS = {
   ]
 };
 const PKGS = ["Базовий","Розширений","Проактивний"];
+const MATN = {start:"Початковий",dev:"Розвивається",zen:"Просвітлений"};
 const MATRIX = [
   ["Базовий реактивний захист",[1,1,1]],
   ["DFIR базовий, аналіз підозрілих зразків",[1,1,1]],
@@ -412,7 +487,8 @@ const KEY="adeon-bs-rates-v1";
 const clone=o=>JSON.parse(JSON.stringify(o));
 let R = clone(DEFAULTS);
 try{ const s = localStorage.getItem(KEY); if(s){ R = Object.assign(clone(DEFAULTS), JSON.parse(s)); } }catch(e){}
-const state = {pkg:1, mode:"85", term:12, cur:"eur", odHours:R.od.map(()=>0)};
+const FTE_DEFAULT={t:[0.25,0.5,1,1.5],big:2,step:0.5,hrs:160,mat:{start:1.3,dev:1,zen:0.8}};
+const state = {mat:"dev", pkg:1, mode:"85", term:12, cur:"eur", odHours:R.od.map(()=>0)};
 const LOGO_KEY="adeon-bs-logo-v1";
 const DEFAULT_LOGO="data:image/png;base64,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";
 let LOGO=DEFAULT_LOGO;
@@ -483,10 +559,15 @@ function buildEditor(){
   [["r1","Супровід PROTECT, €/год"],["r2","Inspect / Threat Hunting, €/год"],["pro85","Проактивний 8/5, €/міс"],["pro247","Проактивний 24/7, €/міс"]]
     .forEach(([k,l])=>h+=`<label class="f">${l}<input type="number" inputmode="decimal" data-r="${k}" value="${R[k]}"></label>`);
   R.od.forEach((s,i)=>h+=`<label class="f">${s.name}, €/год<input type="number" inputmode="decimal" data-o="${i}" value="${s.rate}"></label>`);
-  h+=`</div>`;
+  h+=`</div><p class="small" style="margin:14px 0 0">Коефіцієнти стану інфраструктури</p><div class="scroll"><table class="tbl" style="margin-top:6px"><thead><tr><th>Стан</th><th>Години сесій ×</th><th>Проактивний ×</th></tr></thead><tbody>`;
+  [["start","🔥 Початковий"],["dev","🛠️ Розвивається"],["zen","🧘 Просвітлений"]].forEach(([k,l])=>{
+    h+=`<tr><td>${l}</td><td><input type="number" inputmode="decimal" step="0.05" data-mh="${k}" value="${R.matH[k]}"></td><td><input type="number" inputmode="decimal" step="0.05" data-mp="${k}" value="${R.matP[k]}"></td></tr>`});
+  h+=`</tbody></table></div>`;
   const ed=$("rateEditor"); ed.innerHTML=h;
   ed.querySelectorAll("input[data-t]").forEach(i=>i.addEventListener("input",()=>{R.tiers[+i.dataset.t][i.dataset.f]=num(i.value);save();render()}));
   ed.querySelectorAll("input[data-r]").forEach(i=>i.addEventListener("input",()=>{R[i.dataset.r]=num(i.value);save();render()}));
+  ed.querySelectorAll("input[data-mh]").forEach(i=>i.addEventListener("input",()=>{R.matH[i.dataset.mh]=num(i.value,1);save();render()}));
+  ed.querySelectorAll("input[data-mp]").forEach(i=>i.addEventListener("input",()=>{R.matP[i.dataset.mp]=num(i.value,1);save();render()}));
   ed.querySelectorAll("input[data-o]").forEach(i=>i.addEventListener("input",()=>{R.od[+i.dataset.o].rate=num(i.value);save();render()}));
 }
 $("resetRates").addEventListener("click",()=>{R=clone(DEFAULTS);try{localStorage.removeItem(KEY)}catch(e){}buildEditor();render()});
@@ -500,14 +581,16 @@ function calc(){
   const tier=big?null:R.tiers.find(t=>d>=t.from&&d<=t.to);
   const kO=$("kOverride").value, h1O=$("h1Override").value, h2O=$("h2Override").value;
   const k=kO!==""?num(kO):(tier?tier.k:0);
-  const h1=h1O!==""?num(h1O):(tier?tier.h1:0);
-  const h2=h2O!==""?num(h2O):(tier?tier.h2:0);
+  const mH=(R.matH&&R.matH[state.mat])||1, mP=(R.matP&&R.matP[state.mat])||1;
+  const h1=h1O!==""?num(h1O):(tier?Math.round(tier.h1*mH):0);
+  const h2=h2O!==""?num(h2O):(tier?Math.round(tier.h2*mH):0);
+  const manual={k:kO!=="",h1:h1O!=="",h2:h2O!=="",term:$("termCustom").value!==""};
   const inc=[true,state.pkg>=1,state.pkg>=2];
   const pro=state.mode==="247"?R.pro247:R.pro85;
   const lines=[
-    {n:"Супровід ESET PROTECT",f:`${h1} год × ${R.r1} € × ${k}`,v:big?0:h1*R.r1*k,on:inc[0]},
-    {n:"Inspect / Threat Hunting",f:`${h2} год × ${R.r2} € × ${k}`,v:big?0:h2*R.r2*k,on:inc[1]},
-    {n:`Проактивний TH ${state.mode==="247"?"24/7":"8/5"}`,f:`${pro} € × ${k}`,v:big?0:pro*k,on:inc[2]}
+    {n:"Супровід ESET PROTECT",f:`${h1} год × ${R.r1} € × ${fmtF.format(k)}`,v:big?0:h1*R.r1*k,on:inc[0]},
+    {n:"Inspect / Threat Hunting",f:`${h2} год × ${R.r2} € × ${fmtF.format(k)}`,v:big?0:h2*R.r2*k,on:inc[1]},
+    {n:`Проактивний TH ${state.mode==="247"?"24/7":"8/5"}`,f:`${pro} € × ${fmtF.format(k)} × ${fmtF.format(mP)}`,v:big?0:pro*k*mP,on:inc[2]}
   ];
   const monthly=lines.reduce((s,l)=>s+(l.on?l.v:0),0);
   const od=R.od.map((s,i)=>({n:s.name,h:state.odHours[i]||0,r:s.rate,v:(state.odHours[i]||0)*s.rate}));
@@ -515,7 +598,7 @@ function calc(){
   const tc=$("termCustom").value;
   const term=tc!==""?Math.max(1,Math.floor(num(tc,12))):state.term;
   const range=big?"1000+":(tier?tier.label:d);
-  return {d,big,tier,range,k,h1,h2,lines,monthly,od,odSum,term,pkgName:PKGS[state.pkg]+(state.pkg===2?` ${state.mode==="247"?"24/7":"8/5"}`:"")};
+  return {d,big,tier,range,k,h1,h2,mH,mP,manual,matName:MATN[state.mat],lines,monthly,od,odSum,term,pkgName:PKGS[state.pkg]+(state.pkg===2?` ${state.mode==="247"?"24/7":"8/5"}`:"")};
 }
 
 function render(){
@@ -544,7 +627,7 @@ function render(){
   $("totals").innerHTML=t;
   /* manager breakdown */
   let b=`<table class="bd"><tbody>`;
-  b+=`<tr class="muted"><td>Пристроїв: ${c.d}, коефіцієнт × ${c.k}</td><td></td></tr>`;
+  b+=`<tr class="muted"><td>Пристроїв: ${c.d}, коефіцієнт × ${c.k}<br>Стан: ${c.matName}, сесії × ${c.mH}, проактивний × ${c.mP}</td><td></td></tr>`;
   c.lines.forEach(l=>{if(l.on&&!c.big)b+=`<tr><td>${l.n}<br><span class="small">${l.f}</span></td><td>${eur(l.v)}</td></tr>`});
   if(!c.big) b+=`<tr><td><b>Підписка на місяць</b></td><td><b>${eur(c.monthly)}</b></td></tr>`;
   c.od.filter(x=>x.h).forEach(x=>b+=`<tr><td>${x.n}<br><span class="small">${x.h} год × ${x.r} €</span></td><td>${eur(x.v)}</td></tr>`);
@@ -556,6 +639,7 @@ function render(){
   $("mbarSum").textContent=c.big?"Індивідуально":money(c.monthly);
   $("mbarSub").textContent=c.big?c.pkgName:`на місяць${state.cur==="uah"?" з ПДВ":""} · ${c.pkgName}`;
   renderFxNote();
+  renderFTE(c);
   window.__calc=c;
 }
 
@@ -568,7 +652,7 @@ if("IntersectionObserver" in window){
 $("copyBtn").addEventListener("click",async()=>{
   const c=window.__calc;
   const cl=$("client").value.trim();
-  let t=`Розрахунок вартості послуг ADEON BS${cl?` для ${cl}`:""}\n\nПакет: ${c.pkgName}\nКількість пристроїв: ${c.d}\n`;
+  let t=`Розрахунок вартості послуг ADEON BS${cl?` для ${cl}`:""}\n\nПакет: ${c.pkgName}\nКількість пристроїв: ${c.d}\nСтан інфраструктури: ${c.matName}\n`;
   if(c.big) t+=`Підписка: індивідуальний розрахунок\n`;
   else t+=`Вартість підписки: ${money(c.monthly)} на місяць\nЗа ${months(c.term)}: ${money(c.monthly*c.term)}\n`;
   const od=c.od.filter(x=>x.h);
@@ -589,7 +673,7 @@ $("resetAll").addEventListener("click",()=>{
     return;
   }
   clearTimeout(resetArmed); resetArmed=null; btn.textContent="Почати заново";
-  state.pkg=1; state.mode="85"; state.term=12; state.cur="eur"; state.odHours=R.od.map(()=>0);
+  state.pkg=1; state.mode="85"; state.term=12; state.cur="eur"; state.mat="dev"; $("fteBox").open=false; state.odHours=R.od.map(()=>0);
   $("client").value=""; $("pdfStatus").textContent="";
   $("devices").value=120;
   ["kOverride","h1Override","h2Override","termCustom"].forEach(id=>$(id).value="");
@@ -743,9 +827,9 @@ function buildPDF(c, client){
   const INK=[20,35,52],MUT=[90,107,123],ACC=[14,124,123],LN=[211,220,227],SOFT=[238,243,246];
   /* one type scale, one rhythm */
   const T={title:20,sub:11,h:12.5,body:10,note:8.8};
-  const LH=5.3;          /* body line height */
+  const LH=5.15;          /* body line height */
   const KV=40;           /* value column offset */
-  const SEC_BEFORE=8.5, SEC_AFTER=6.2;
+  const SEC_BEFORE=7.5, SEC_AFTER=6;
   let y=18;
   const font=(w,sz,col)=>{doc.setFont("Plex",w);doc.setFontSize(sz);doc.setTextColor(...(col||INK))};
   const need=h=>{if(y+h>H-18){doc.addPage();y=20}};
@@ -776,10 +860,10 @@ function buildPDF(c, client){
     try{const pr=doc.getImageProperties(LOGO);let h=12,w=pr.width/pr.height*h;if(w>48){w=48;h=w*pr.height/pr.width}
       doc.addImage(LOGO,"PNG",W-M-w,y+3.5-h/2,w,h)}catch(e){}
   }else{font("normal",T.note,MUT);doc.text("Офіційний партнер ESET",W-M,y+5,{align:"right"})}
-  y+=12; rule(y,ACC,.8); y+=12;
+  y+=12; rule(y,ACC,.8); y+=10;
 
   font("bold",T.title); doc.text("Комерційна пропозиція",M,y); y+=7;
-  font("normal",T.sub,MUT); doc.text("з комплексного кіберзахисту на базі рішень ESET",M,y); y+=10;
+  font("normal",T.sub,MUT); doc.text("з комплексного кіберзахисту на базі рішень ESET",M,y); y+=8.5;
 
   const today=new Date(), until=new Date(today.getTime()+30*864e5);
   kv("Клієнт",client||"—");
@@ -790,6 +874,7 @@ function buildPDF(c, client){
   section("Сервісна підписка");
   kv("Пакет",c.pkgName);
   kv("Кількість пристроїв",String(c.d));
+  kv("Стан інфраструктури",c.matName);
   kv("Термін договору",months(c.term));
   y+=3;
   label("До пакета входить");
@@ -848,6 +933,200 @@ $("pdfBtn").addEventListener("click",async()=>{
     }else{doc.save(name);st.textContent="PDF сформовано."}
   }catch(err){st.textContent="Помилка під час створення PDF."; console.error(err)}
   finally{btn.disabled=false; setTimeout(()=>{if(st.textContent!=="Готую PDF…")st.textContent=""},4000)}
+});
+
+/* FTE */
+if(!R.fte) R.fte=clone(FTE_DEFAULT);
+const fmtF=new Intl.NumberFormat("uk-UA",{maximumFractionDigits:2});
+const fmtH=new Intl.NumberFormat("uk-UA",{maximumFractionDigits:0});
+function fteBase(c){
+  const F=R.fte;
+  if(c.big) return F.big+F.step*Math.floor((c.d-1000)/500);
+  const i=R.tiers.indexOf(c.tier); return i>=0?F.t[i]:0;
+}
+function fteData(c){
+  const F=R.fte, m=F.mat[state.mat]||1;
+  const fte=fteBase(c)*m, mh=fte*F.hrs;
+  const sess=c.big?0:(c.h1+(state.pkg>=1?c.h2:0));
+  const od=c.od.reduce((s,x)=>s+x.h,0);
+  return {m,fte,mh,sess,od,term:(mh+sess)*c.term+od};
+}
+function renderFTE(c){
+  const F=R.fte, f=fteData(c);
+  document.querySelectorAll("[data-mat]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mat===state.mat));
+  $("fteMat").textContent=`Стан інфраструктури: ${c.matName}`;
+  $("fteMonth").textContent=fmtF.format(f.fte)+" FTE";
+  $("fteMonthH").textContent=`≈ ${fmtH.format(f.mh)} люд.-год на місяць, стан × ${fmtF.format(f.m)}`;
+  $("fteSess").textContent=c.big?"—":fmtH.format(f.sess)+" год/міс";
+  $("fteSessS").textContent=c.big?"індивідуально":(state.pkg>=1?`PROTECT ${c.h1} + Inspect / TH ${c.h2}`:`PROTECT ${c.h1}`);
+  $("fteOd").textContent=fmtH.format(f.od);
+  $("fteTermK").textContent=`За ${months(c.term)}`;
+  $("fteTerm").textContent=fmtH.format(f.term)+" люд.-год";
+  $("fteTermS").textContent=`інциденти ${fmtH.format(f.mh*c.term)} + сесії ${fmtH.format(f.sess*c.term)} + разові ${fmtH.format(f.od)}`;
+  $("fteFlag").textContent=c.big?"Для 1000+ пристроїв FTE рахується за нормативом: базово "+fmtF.format(F.big)+" FTE і ще "+fmtF.format(F.step)+" FTE на кожні 500 пристроїв понад 1000.":"";
+}
+document.querySelectorAll("[data-mat]").forEach(b=>b.addEventListener("click",()=>{state.mat=b.dataset.mat;render()}));
+function buildNorms(){
+  const F=R.fte, L=R.tiers.map(t=>t.label);
+  let h=F.t.map((v,i)=>`<label class="f">FTE: ${L[i]}<input type="number" inputmode="decimal" step="0.05" data-ft="${i}" value="${v}"></label>`).join("");
+  h+=`<label class="f">FTE: 1000+<input type="number" inputmode="decimal" step="0.1" data-fk="big" value="${F.big}"></label>`;
+  h+=`<label class="f">+FTE на 500 понад 1000<input type="number" inputmode="decimal" step="0.1" data-fk="step" value="${F.step}"></label>`;
+  h+=`<label class="f">Годин в 1 FTE на місяць<input type="number" inputmode="numeric" step="1" data-fk="hrs" value="${F.hrs}"></label>`;
+  h+=[["start","🔥 Початковий"],["dev","🛠️ Розвивається"],["zen","🧘 Просвітлений"]].map(([k,l])=>`<label class="f">${l}, ×<input type="number" inputmode="decimal" step="0.05" data-fm="${k}" value="${F.mat[k]}"></label>`).join("");
+  const box=$("fteNorms"); box.innerHTML=h;
+  box.querySelectorAll("[data-ft]").forEach(i=>i.addEventListener("input",()=>{R.fte.t[+i.dataset.ft]=num(i.value);save();render()}));
+  box.querySelectorAll("[data-fk]").forEach(i=>i.addEventListener("input",()=>{R.fte[i.dataset.fk]=num(i.value);save();render()}));
+  box.querySelectorAll("[data-fm]").forEach(i=>i.addEventListener("input",()=>{R.fte.mat[i.dataset.fm]=num(i.value,1);save();render()}));
+}
+$("fteNormsReset").addEventListener("click",()=>{R.fte=clone(FTE_DEFAULT);save();buildNorms();render()});
+$("resetRates").addEventListener("click",()=>{if(!R.fte)R.fte=clone(FTE_DEFAULT);buildNorms();render()});
+buildNorms();
+
+/* manager report */
+const uah=v=>fmtU.format(toUah(v))+" грн";
+function mgrText(c,client){
+  const f=fteData(c), L=[];
+  const today=new Date();
+  L.push("ВНУТРІШНІЙ РОЗРАХУНОК ADEON BS (не для клієнта)");
+  L.push(`Клієнт: ${client||"—"}`, `Дата: ${dstr(today)}`, "");
+  L.push("ПАРАМЕТРИ");
+  L.push(`Пристроїв: ${c.d} (діапазон ${c.range})`);
+  L.push(`Стан інфраструктури: ${c.matName} (сесії × ${fmtF.format(c.mH)}, проактивний × ${fmtF.format(c.mP)}, FTE × ${fmtF.format(f.m)})`);
+  L.push(`Пакет: ${c.pkgName}`);
+  L.push(`Коефіцієнт складності: × ${fmtF.format(c.k)}${c.manual.k?" (вручну)":""}`);
+  L.push(`Термін: ${months(c.term)}${c.manual.term?" (вручну)":""}`, "");
+  L.push("СЕРВІСНА ПІДПИСКА");
+  if(c.big) L.push("Індивідуальний розрахунок (1000+ пристроїв)");
+  else{
+    c.lines.filter(l=>l.on).forEach(l=>L.push(`${l.n}: ${l.f} = ${eur(l.v)}`));
+    L.push(`На місяць: ${eur(c.monthly)} без ПДВ / ${uah(c.monthly)} з ПДВ`);
+    L.push(`За ${months(c.term)}: ${eur(c.monthly*c.term)} без ПДВ / ${uah(c.monthly*c.term)} з ПДВ`);
+  }
+  L.push("");
+  const od=c.od.filter(x=>x.h);
+  L.push("РАЗОВІ ПОСЛУГИ");
+  if(od.length){od.forEach(x=>L.push(`${x.n}: ${x.h} год × ${x.r} € = ${eur(x.v)}`));
+    L.push(`Разом: ${eur(c.odSum)} без ПДВ / ${uah(c.odSum)} з ПДВ`)}
+  else L.push("немає");
+  L.push("");
+  if(!c.big){const T=c.monthly*c.term+c.odSum;L.push(`ЗАГАЛОМ ЗА ${months(c.term).toUpperCase()}: ${eur(T)} без ПДВ / ${uah(T)} з ПДВ`)}
+  L.push(`Курс: ${fmt.format(FX.rate)} грн/€ на ${FX.date} (${FX.manual?"вказано вручну":FX.source}), ПДВ ${R.vat}%`, "");
+  L.push("НАВАНТАЖЕННЯ КОМАНДИ");
+  L.push(`Інциденти та розслідування: ${fmtF.format(f.fte)} FTE ≈ ${fmtH.format(f.mh)} люд.-год/міс`);
+  L.push(`Планові сесії: ${c.big?"індивідуально":fmtH.format(f.sess)+" год/міс"}`);
+  L.push(`Разові послуги: ${fmtH.format(f.od)} люд.-год`);
+  L.push(`За ${months(c.term)}: ${fmtH.format(f.term)} люд.-год`, "");
+  const man=[];
+  if(c.manual.k) man.push("коефіцієнт складності");
+  if(c.manual.h1) man.push(`години PROTECT (${c.h1})`);
+  if(c.manual.h2) man.push(`години Inspect / TH (${c.h2})`);
+  if(c.manual.term) man.push("термін договору");
+  L.push(`Ручні коригування: ${man.length?man.join(", "):"немає"}`);
+  return L.join("\n");
+}
+
+function buildMgrPDF(c, client){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:"mm",format:"a4"});
+  doc.addFileToVFS("Plex-R.ttf",PDF_FONTS.r); doc.addFont("Plex-R.ttf","Plex","normal");
+  doc.addFileToVFS("Plex-B.ttf",PDF_FONTS.b); doc.addFont("Plex-B.ttf","Plex","bold");
+  const W=210,H=297,M=20,CW=W-2*M;
+  const INK=[20,35,52],MUT=[90,107,123],ACC=[14,124,123],LN=[211,220,227],AMB=[227,165,59],AMBS=[255,246,227],AMBI=[122,75,6];
+  const T={title:18,h:12,body:9.6,note:8.5}, LH=5, ROW=6.6, KV=46;
+  let y=18;
+  const font=(w,sz,col)=>{doc.setFont("Plex",w);doc.setFontSize(sz);doc.setTextColor(...(col||INK))};
+  const need=h=>{if(y+h>H-18){doc.addPage();y=20}};
+  const rule=(yy,col,w)=>{doc.setDrawColor(...(col||LN));doc.setLineWidth(w||.25);doc.line(M,yy,W-M,yy)};
+  const section=t=>{need(7+6+LH*2);y+=6.5;doc.setFillColor(...AMB);doc.rect(M,y-3.8,1.2,4.5,"F");font("bold",T.h);doc.text(t,M+4,y);y+=6};
+  const kv=(k,v)=>{need(LH);font("normal",T.body,MUT);doc.text(k,M,y);font("bold",T.body);doc.text(doc.splitTextToSize(v,CW-KV)[0],M+KV,y);y+=LH};
+  const row=(l,mid,v,bold)=>{need(ROW);font(bold?"bold":"normal",T.body);doc.text(doc.splitTextToSize(l,78)[0],M,y);
+    if(mid){font("normal",T.body,MUT);doc.text(mid,W-M-42,y,{align:"right"})}
+    font(bold?"bold":"normal",T.body);doc.text(v,W-M,y,{align:"right"});rule(y+2.4);y+=ROW};
+
+  font("bold",15); doc.text("ADEON BS",M,y+5);
+  try{const pr=doc.getImageProperties(LOGO);let h=12,w=pr.width/pr.height*h;if(w>48){w=48;h=w*pr.height/pr.width}
+    doc.addImage(LOGO,"PNG",W-M-w,y+3.5-h/2,w,h)}catch(e){}
+  y+=12; rule(y,AMB,.8); y+=11;
+  font("bold",T.title); doc.text("Внутрішній розрахунок",M,y);
+  const tag="Не для передачі клієнту"; font("bold",8.5,AMBI); const tw=doc.getTextWidth(tag)+6;
+  doc.setFillColor(...AMBS); doc.setDrawColor(...AMB); doc.setLineWidth(.3); doc.roundedRect(W-M-tw,y-5,tw,7,1.5,1.5,"FD"); doc.text(tag,W-M-tw/2,y-.3,{align:"center"});
+  y+=10;
+  const f=fteData(c);
+  kv("Клієнт",client||"—"); kv("Дата",dstr(new Date()));
+
+  section("Параметри");
+  kv("Кількість пристроїв",`${c.d} (діапазон ${c.range})`);
+  kv("Стан інфраструктури",`${c.matName}: сесії × ${fmtF.format(c.mH)}, проактивний × ${fmtF.format(c.mP)}, FTE × ${fmtF.format(f.m)}`);
+  kv("Пакет",c.pkgName);
+  kv("Коефіцієнт складності",`× ${fmtF.format(c.k)}${c.manual.k?" (вручну)":""}`);
+  kv("Термін договору",months(c.term)+(c.manual.term?" (вручну)":""));
+  kv("Курс і ПДВ",`${fmt.format(FX.rate)} грн/€ на ${FX.date}, ПДВ ${R.vat}%`);
+
+  section("Сервісна підписка, € без ПДВ");
+  if(c.big) row("Сервісна підписка","","індивідуально");
+  else{
+    c.lines.filter(l=>l.on).forEach(l=>row(l.n,l.f,eur(l.v)));
+    row("Разом на місяць","",eur(c.monthly),true);
+    row(`Разом за ${months(c.term)}`,"",eur(c.monthly*c.term),true);
+  }
+  const od=c.od.filter(x=>x.h);
+  section("Разові послуги, € без ПДВ");
+  if(od.length){od.forEach(x=>row(x.n,`${x.h} год × ${x.r} €`,eur(x.v)));row("Разом","",eur(c.odSum),true)}
+  else{font("normal",T.body,MUT);doc.text("Немає",M,y);y+=LH}
+
+  section("Підсумок");
+  if(c.big){row("Разові послуги",eur(c.odSum),uah(c.odSum),true)}
+  else{
+    font("normal",T.note,MUT); doc.text("без ПДВ",W-M-42,y,{align:"right"}); doc.text("з ПДВ",W-M,y,{align:"right"}); y+=LH;
+    row("Підписка на місяць",eur(c.monthly),uah(c.monthly));
+    row(`Підписка за ${months(c.term)}`,eur(c.monthly*c.term),uah(c.monthly*c.term));
+    row("Разові послуги",eur(c.odSum),uah(c.odSum));
+    const Tt=c.monthly*c.term+c.odSum;
+    row(`Загалом за ${months(c.term)}`,eur(Tt),uah(Tt),true);
+  }
+
+  section("Навантаження команди");
+  row("Інциденти та розслідування",`${fmtH.format(f.mh)} люд.-год/міс`,`${fmtF.format(f.fte)} FTE`);
+  row("Планові сесії","",c.big?"індивідуально":`${fmtH.format(f.sess)} год/міс`);
+  row("Разові послуги","",`${fmtH.format(f.od)} люд.-год`);
+  row(`Загалом за ${months(c.term)}`,"",`${fmtH.format(f.term)} люд.-год`,true);
+
+  const man=[];
+  if(c.manual.k) man.push("коефіцієнт складності");
+  if(c.manual.h1) man.push(`години PROTECT (${c.h1})`);
+  if(c.manual.h2) man.push(`години Inspect / TH (${c.h2})`);
+  if(c.manual.term) man.push("термін договору");
+  y+=4; need(LH*2);
+  font("normal",T.note,man.length?AMBI:MUT);
+  doc.splitTextToSize(`Ручні коригування: ${man.length?man.join(", "):"немає"}. Курс: ${FX.manual?"вказано вручну":FX.source}.`,CW).forEach(l=>{need(4.5);doc.text(l,M,y);y+=4.5});
+
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);rule(H-14.5);font("normal",7.8,MUT);
+    doc.text(`ADEON BS, внутрішній розрахунок${client?" для "+client:""}. Не для передачі клієнту.`.slice(0,120),M,H-10);
+    doc.text(`${i} / ${n}`,W-M,H-10,{align:"right"})}
+  return doc;
+}
+
+$("mgrPdf").addEventListener("click",async()=>{
+  const st=$("mgrStatus"), btn=$("mgrPdf");
+  if(!window.jspdf){st.textContent="Модуль PDF не завантажився. Оновіть сторінку.";return}
+  const client=$("client").value.trim();
+  btn.disabled=true; st.textContent="Готую PDF…";
+  try{
+    const doc=buildMgrPDF(window.__calc,client);
+    const safe=(client||"клієнт").replace(/[\\/:*?"<>|«»]+/g,"").replace(/\s+/g,"_").slice(0,60);
+    const name=`Внутр_розрахунок_${safe}_${dstr(new Date())}.pdf`;
+    if(DL){
+      try{await DL.save({filename:name,data:doc.output("blob")});st.textContent="PDF збережено."}
+      catch(err){st.textContent=err&&err.code==="declined"?"Збереження скасовано.":"Не вдалося зберегти PDF у цьому вікні."}
+    }else{doc.save(name);st.textContent="PDF сформовано."}
+  }catch(err){st.textContent="Помилка під час створення PDF."; console.error(err)}
+  finally{btn.disabled=false; setTimeout(()=>{if(st.textContent!=="Готую PDF…")st.textContent=""},4000)}
+});
+$("mgrCopy").addEventListener("click",async()=>{
+  const t=mgrText(window.__calc,$("client").value.trim()), btn=$("mgrCopy");
+  try{await navigator.clipboard.writeText(t);btn.textContent="Скопійовано";setTimeout(()=>btn.textContent="Скопіювати звіт",1800)}
+  catch(e){$("mgrFallback").innerHTML=`<textarea class="copy" readonly></textarea>`;const ta=document.querySelector("#mgrFallback textarea");ta.value=t;ta.focus();ta.select();}
 });
 
 buildTiers(); buildOD(); buildEditor(); render();
